@@ -12,3 +12,8 @@ ray3* ray3_make(vec3* origin, vec3* direction) {
     r->direction = direction;
     return r;
 }
+
+vec3* ray3_point_at_parameter(ray3* r, float t) {
+    return vec3_add(r->origin,
+                    vec3_scale(r->direction, t));
+}

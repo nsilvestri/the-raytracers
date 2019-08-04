@@ -32,6 +32,15 @@ float vec3_length(vec3* v) {
     return sqrt(pow(v->x, 2) + pow(v->y, 2) + pow(v->z, 2));
 }
 
+vec3* vec3_normalize(vec3* v) {
+    float length = vec3_length(v);
+    if (length == 0) {
+        return v;
+    }
+
+    return vec3_scale(v, 1.0 / length);
+}
+
 vec3* vec3_scale(vec3* v, float scale) {
     return vec3_make(v->x * scale, v->y * scale, v->z * scale);
 }

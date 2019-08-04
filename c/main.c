@@ -1,8 +1,10 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "vec3.h"
 #include "ray3.h"
 #include "surface.h"
+
 
 int main(int argc, char** argv) {
     int image_width = 200;
@@ -27,7 +29,17 @@ int main(int argc, char** argv) {
             vec3* direction = vec3_add(lower_left_corner,
                                        vec3_add(horizontal_offset, vertical_offset));
             ray3* r = ray3_make(origin, direction);
-            vec3* color = surface_intersect(sphere, r);
+            hit_record* hit_record = surface_hit(sphere, r);
+            vec3* color;
+            if (hit_record->t > 0) {
+                float r = fabs(hit_record->normal->x);
+                float g = fabs(hit_record->normal->y);
+                float b = fabs(hit_record->normal->z);
+                color = rgb_make(r, g, b);
+            }
+            else {
+                color = rgb_make(0, 0, 0);
+            }
             printf("%d %d %d\n", (int) (color->r * 255), (int) (color->g * 255), (int) (color->b * 255));
         }
     }
