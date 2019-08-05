@@ -16,18 +16,6 @@ vec3* vec3_make(float x, float y, float z) {
     return v;
 }
 
-vec3* rgb_make(float r, float g, float b) {
-    vec3* v = malloc(sizeof(vec3));
-    if (v == NULL) {
-        fprintf(stderr, "out of memory\n"); 
-        exit(1);
-    }
-    v->r = r;
-    v->g = g;
-    v->b = b;
-    return v;
-}
-
 float vec3_length(vec3* v) {
     return sqrt(pow(v->x, 2) + pow(v->y, 2) + pow(v->z, 2));
 }

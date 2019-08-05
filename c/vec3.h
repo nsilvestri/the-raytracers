@@ -3,11 +3,9 @@
 
 typedef struct vec3 {
     float x, y, z;
-    float r, g, b;
 } vec3;
 
 vec3* vec3_make(float x, float y, float z);
-vec3* rgb_make(float r, float g, float b);
 
 float vec3_length(vec3* v);
 vec3* vec3_normalize(vec3* v);
