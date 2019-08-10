@@ -5,6 +5,7 @@
 
 #include "vec3.h"
 #include "ray3.h"
+#include "scene.h"
 #include "surface.h"
 
 
@@ -38,18 +39,8 @@ int main(int argc, char** argv) {
                 vec3* direction = vec3_add(lower_left_corner,
                                         vec3_add(horizontal_offset, vertical_offset));
                 ray3* r = ray3_make(origin, direction);
-                hit_record* hit_record = surface_hit(sphere, r);
-                vec3* color_sample;
-                if (hit_record->t > 0) {
-                    float r = fabs(hit_record->normal->x);
-                    float g = fabs(hit_record->normal->y);
-                    float b = fabs(hit_record->normal->z);
-                    color_sample = vec3_make(r, g, b);
-                }
-                else {
-                    color_sample = vec3_make(0, 0, 0);
-                }
-                // add sample color to color total
+                vec3* color_sample = scene_color(r, &sphere, 1);
+               // add sample color to color total
                 color = vec3_add(color, color_sample);
             }
             // take average of each sample color
