@@ -21,20 +21,33 @@ vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
 
     // no intersection; return black color by default
     if (nearest_t == INFINITY) {
-        return vec3_make(0, 0, 0);
+        vec3* unit_direction = vec3_normalize(r->direction);
+        float t = 0.5 * (unit_direction->y + 1.0);
+        return vec3_add(
+            vec3_scale(vec3_make(1, 1, 1), 1.0 - t),
+            vec3_scale(vec3_make(0.5, 0.7, 1.0), t)
+        );
     }
 
     // nearest now contains the nearest surface; calculate the color
     hit_record* hit_record = surface_hit(nearest, r);
     vec3* color_sample;
-    if (hit_record->t > 0) {
-        float r = fabs(hit_record->normal->x);
-        float g = fabs(hit_record->normal->y);
-        float b = fabs(hit_record->normal->z);
-        color_sample = vec3_make(r, g, b);
-    }
-    else {
-        color_sample = vec3_make(0, 0, 0);
-    }
+
+    vec3* point_of_intersection = ray3_point_at_parameter(r, hit_record->t);
+    vec3* light = vec3_make(1, 1, 1);
+    ray3* light_direction = ray3_make(point_of_intersection,
+                                        vec3_sub(light, point_of_intersection));
+
+    float lambertian_max = fmax(0,
+                                vec3_dot(
+                                    vec3_normalize(hit_record->normal),
+                                    vec3_normalize(light_direction->direction)
+                                ));
+
+    return vec3_make(
+                     fabs(lambertian_max),
+                     fabs(lambertian_max),
+                     fabs(lambertian_max)
+                    );
 }
  

@@ -27,8 +27,10 @@ int main(int argc, char** argv) {
     vec3* origin = vec3_make(0.0, 0.0, 0.0);
 
     surface* sphere = surface_sphere_make(vec3_make(0, 0, -1), 0.5);
+    surface* sphere_big = surface_sphere_make(vec3_make(0, -100.5, -1), 100);
+    surface* surfaces[2] = { sphere, sphere_big };
 
-    for (int j = 0; j < image_height; j++) {
+    for (int j = image_height - 1; j >= 0; j--) {
         for (int i = 0; i < image_width; i++) {
             vec3* color = vec3_make(0, 0, 0);
             for (int s = 0; s < num_samples; s++) {
@@ -39,7 +41,7 @@ int main(int argc, char** argv) {
                 vec3* direction = vec3_add(lower_left_corner,
                                         vec3_add(horizontal_offset, vertical_offset));
                 ray3* r = ray3_make(origin, direction);
-                vec3* color_sample = scene_color(r, &sphere, 1);
+                vec3* color_sample = scene_color(r, surfaces, 2);
                // add sample color to color total
                 color = vec3_add(color, color_sample);
             }
