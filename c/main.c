@@ -14,9 +14,9 @@ int main(int argc, char** argv) {
     srand48(time(NULL));
 
     // set image properties
-    int image_width = 200;
-    int image_height = 100;
-    int num_samples = 20;
+    int image_width = 400;
+    int image_height = 200;
+    int num_samples = 10;
 
     printf("P3\n%d %d\n255\n", image_width, image_height);
 
