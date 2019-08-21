@@ -20,7 +20,8 @@ surface* surface_sphere_make(vec3* position, float radius) {
 hit_record* surface_hit(surface* s, ray3* r) {
     if (s->type == SURFACE_SPHERE) {
         // a, b, c are A, B, C of quadratic equation
-        vec3* oc = vec3_sub(r->origin, s->sphere_origin);
+        vec3* oc = vec3_make(0, 0, 0);
+        oc = vec3_sub(oc, r->origin, s->sphere_origin);
         // a = (dir . dir)
         float a = vec3_dot(r->direction, r->direction);
         // b = (dir . (eye - sphere_origin))
@@ -42,12 +43,21 @@ hit_record* surface_hit(surface* s, ray3* r) {
             t = fmin(tPlus, tMinus);
         }
 
-        vec3* point_of_intersection = ray3_point_at_parameter(r, t);
-        vec3* normal = vec3_normalize(
-            vec3_sub(point_of_intersection, s->sphere_origin)
-        );
+        vec3* point_of_intersection = vec3_make(0, 0, 0);
+        point_of_intersection = ray3_point_at_parameter(point_of_intersection, r, t);
+
+        vec3* normal_direction = vec3_make(0, 0, 0);
+        normal_direction = vec3_sub(normal_direction, point_of_intersection, s->sphere_origin);
+
+        vec3* normal = vec3_make(0, 0, 0);
+        normal = vec3_normalize(normal,  normal_direction);
 
         return hit_record_make(t, normal);
+
+        // clean up
+        free(oc);
+        free(point_of_intersection);
+        free(normal_direction);
     }
 }
 

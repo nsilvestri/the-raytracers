@@ -18,6 +18,6 @@ ray3* ray3_make(vec3* origin, vec3* direction);
  * 
  * @return vec3* a vec3* representing some point along r, specified by t.
  */
-vec3* ray3_point_at_parameter(ray3* r, float t);
+vec3* ray3_point_at_parameter(vec3* result, ray3* r, float t);
 
 #endif
