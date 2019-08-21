@@ -17,11 +17,24 @@ surface* surface_sphere_make(vec3* position, float radius) {
     return s;
 }
 
+/**
+ * @brief Determine information about the intersection between the given surface
+ *        s and a given ray3 r.
+ *        The returned pointer is a hit_record populated with the t parameter
+ *        for the given ray, such that hit_by_parameter(r, t) returns the point
+ *        which r intersects s in xyz space.
+ *        If s and r do not intersect, the returned hit_record's t will be
+ *        -INFINITY and who knows what its normal vec3 will be.
+ * 
+ * @param s a pointer to the surface to check intersection
+ * @param r a pointer to the ray3 to check intersection
+ * @return hit_record* a pointer to a hit_record populated with the appropriate
+ *        t and normal vectors.
+ */
 hit_record* surface_hit(surface* s, ray3* r) {
     if (s->type == SURFACE_SPHERE) {
-        // a, b, c are A, B, C of quadratic equation
-        vec3* oc = vec3_make(0, 0, 0);
-        oc = vec3_sub(oc, r->origin, s->sphere_origin);
+        vec3* oc = vec3_sub(vec3_make(0, 0, 0), r->origin, s->sphere_origin);
+        /* a, b, c are A, B, C of quadratic equation */
         // a = (dir . dir)
         float a = vec3_dot(r->direction, r->direction);
         // b = (dir . (eye - sphere_origin))
@@ -31,7 +44,7 @@ hit_record* surface_hit(surface* s, ray3* r) {
         // discr = B^2-4AC
         float discriminant = (b * b) - (4 * a * c);
 
-        // filling hit_record
+        /* filling hit_record */
         float t;
         if (discriminant < 0) {
             t = -INFINITY;
@@ -43,21 +56,19 @@ hit_record* surface_hit(surface* s, ray3* r) {
             t = fmin(tPlus, tMinus);
         }
 
-        vec3* point_of_intersection = vec3_make(0, 0, 0);
-        point_of_intersection = ray3_point_at_parameter(point_of_intersection, r, t);
-
-        vec3* normal_direction = vec3_make(0, 0, 0);
-        normal_direction = vec3_sub(normal_direction, point_of_intersection, s->sphere_origin);
-
-        vec3* normal = vec3_make(0, 0, 0);
-        normal = vec3_normalize(normal,  normal_direction);
-
-        return hit_record_make(t, normal);
+        // point_of_intersection is self-explanatory
+        vec3* point_of_intersection = ray3_point_at_parameter(vec3_make(0, 0, 0), r, t);
+        // normal_direction is the vec3 from sphere center to p_o_i
+        vec3* normal_direction = vec3_sub(vec3_make(0, 0, 0), point_of_intersection, s->sphere_origin);
+        // normalize the normal because why not? Might not be totally necessary
+        vec3* normal = vec3_normalize(vec3_make(0, 0, 0),  normal_direction);
 
         // clean up
         free(oc);
         free(point_of_intersection);
         free(normal_direction);
+
+        return hit_record_make(t, normal);
     }
 }
 
