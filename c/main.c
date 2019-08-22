@@ -8,6 +8,8 @@
 #include "scene.h"
 #include "surface.h"
 
+// benchmarking func
+struct timespec diff(struct timespec start, struct timespec end);
 
 int main(int argc, char** argv) {
     // seed random number generator
@@ -31,6 +33,10 @@ int main(int argc, char** argv) {
     surface* sphere = surface_sphere_make(vec3_make(0, 0, -1), 0.5);
     surface* sphere_big = surface_sphere_make(vec3_make(0, -100.5, -1), 100);
     surface* surfaces[2] = { sphere, sphere_big };
+
+    // benchmarking
+    struct timespec start;
+    clock_gettime(CLOCK_REALTIME, &start);
 
     // iterate over each pixel, from top to bottom (because of PPM pixel order)
     for (int j = image_height - 1; j >= 0; j--) {
@@ -89,6 +95,11 @@ int main(int argc, char** argv) {
         }
     }
 
+    // end benchmark
+    struct timespec stop;
+    clock_gettime(CLOCK_REALTIME, &stop);
+    time_t end = time(NULL);
+
     // clean up
     free(lower_left_corner);
     free(horizontal);
@@ -100,6 +111,34 @@ int main(int argc, char** argv) {
 
     free(sphere_big->sphere_origin);
     free(sphere_big);
+
+    // output benchmark
+    struct timespec total = diff(start, stop);
+    fprintf(stderr, "Total time: %d.%d seconds\n", total.tv_sec, total.tv_nsec);
+    fprintf(stderr, "Samples per second: %f", (float) (image_height * image_width * num_samples) / (total.tv_sec + ((float) total.tv_nsec / 1000000000)));
+}
+
+/**
+ * @brief Take the difference between two struct timespec.
+ * 
+ * Code taken from guyrutenberg.com
+ * 
+ * @param start 
+ * @param end 
+ * @return struct timespec 
+ */
+
+struct timespec diff(struct timespec start, struct timespec end)
+{
+	struct timespec temp;
+	if ((end.tv_nsec-start.tv_nsec)<0) {
+		temp.tv_sec = end.tv_sec-start.tv_sec-1;
+		temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+	} else {
+		temp.tv_sec = end.tv_sec-start.tv_sec;
+		temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+	}
+	return temp;
 }
 
      
