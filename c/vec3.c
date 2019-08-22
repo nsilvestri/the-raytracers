@@ -58,15 +58,25 @@ float vec3_dot(vec3* v1, vec3* v2) {
 vec3* vec3_random_in_unit_sphere() {
     vec3* v = NULL;
     while (1) {
+        // vec3 with components a random length from -1 to +1
         vec3* random_vec3 = vec3_make(drand48(), drand48(), drand48());
+        // double it; components random from -2 to +2
         random_vec3 = vec3_scale(random_vec3, random_vec3, 2);
-        random_vec3 = vec3_sub(random_vec3, vec3_make(1, 1, 1), random_vec3);
+        // this is just a vec3 with all 1 components. Bad name. Whatever.
+        vec3* cube_diag = vec3_make(1, 1, 1);
+        // we will create a vec3 that lands somewhere in the -1 to +1 cube
+        vec3* unit_cube_vec3 = vec3_sub(vec3_make(0, 0, 0), cube_diag, random_vec3);
 
-        if (vec3_length(random_vec3) > 1.0) {
-            v = random_vec3;
-            break;
-        }
+        // clean up before check
         free(random_vec3);
+        free(cube_diag);
+
+        // check if unit_cube_vec3 is longer than 1; AKA, outside of the unit sphere.
+        if (vec3_length(unit_cube_vec3) < 1.0) {
+            return unit_cube_vec3;
+        }
+
+        // clean up
+        free(unit_cube_vec3);
     }
-    return v;
 }
