@@ -1,7 +1,6 @@
 .vscode/
-raytracer
 debug
 *.o
 *.ppm
 .project
-
+/bin/
