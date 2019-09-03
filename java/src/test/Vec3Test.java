@@ -30,21 +30,21 @@ public class Vec3Test {
 	@Test
 	public void testScale() {
 		Vec3 v1 = new Vec3(1, 2, 3);
-		v1.scale(2);
-		assertEquals(2, v1.getX());
-		assertEquals(4, v1.getY());
-		assertEquals(6, v1.getZ());
+		Vec3 v1Scaled = Vec3.scale(v1, 2);
+		assertEquals(2, v1Scaled.getX());
+		assertEquals(4, v1Scaled.getY());
+		assertEquals(6, v1Scaled.getZ());
 	}
 	
 	@Test
 	public void testNormalization() {
 		Vec3 v1 = new Vec3(1, 2, 3);
-		v1.normalize();
-		assertEquals(1, v1.length());
+		Vec3 v1Normalized = Vec3.normalize(v1);
+		assertEquals(1, v1Normalized.length());
 		
 		Vec3 zeroLength = new Vec3(0, 0, 0);
-		zeroLength.normalize();
-		assertEquals(0, zeroLength.length());
+		Vec3 zeroLengthNormalized = Vec3.normalize(zeroLength);
+		assertEquals(0, zeroLengthNormalized.length());
 	}
 	
 	@Test

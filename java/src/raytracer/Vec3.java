@@ -13,19 +13,20 @@ public class Vec3 {
 		return Math.sqrt(Math.pow(x, 2) +  Math.pow(y, 2) + Math.pow(z, 2));
 	}
 	
-	public Vec3 scale(double scalar) {
-		this.x = this.x * scalar;
-		this.y = this.y * scalar;
-		this.z = this.z * scalar;
-		return this;
+	public static Vec3 scale(Vec3 v, double scalar) {
+		Vec3 result = new Vec3(0, 0, 0);
+		result.x = v.x * scalar;
+		result.y = v.y * scalar;
+		result.z = v.z * scalar;
+		return result;
 	}
 	
-	public Vec3 normalize() {
-		if (this.length() == 0) {
-			return this;
+	public static Vec3 normalize(Vec3 v) {
+		if (v.length() == 0) {
+			return v;
 		}
 		
-		return this.scale(1 / this.length());
+		return Vec3.scale(v, 1 / v.length());
 	}
 	
 	public static Vec3 add(Vec3 left, Vec3 right) {
