@@ -28,6 +28,45 @@ public class Vec3 {
 		return this.scale(1 / this.length());
 	}
 	
+	public static Vec3 add(Vec3 left, Vec3 right) {
+		Vec3 result = new Vec3(0, 0, 0);
+		
+		result.setX(left.getX() + right.getX());
+		result.setY(left.getY() + right.getY());
+		result.setZ(left.getZ() + right.getZ());
+		
+		return result;
+	}
+	
+	public static Vec3 sub(Vec3 left, Vec3 right) {
+		Vec3 result = new Vec3(0, 0, 0);
+		
+		result.setX(left.getX() - right.getX());
+		result.setY(left.getY() - right.getY());
+		result.setZ(left.getZ() - right.getZ());
+		
+		return result;
+	}
+	
+	public static double dot(Vec3 left, Vec3 right) {
+		return (left.getX() * right.getX()) + (left.getY() * right.getY()) + (left.getZ() * right.getZ());
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (o == null) {
+			return false;
+		}
+		
+		if (!(o instanceof Vec3)) {
+			return false;
+		}
+		
+		Vec3 other = (Vec3) o;
+		
+		return (getX() == other.getX()) && (getY() == other.getY()) && (getZ() == other.getZ());
+	}
+	
 	public double getX() {
 		return x;
 	}
