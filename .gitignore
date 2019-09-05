@@ -3,3 +3,5 @@ raytracer
 debug
 *.o
 *.ppm
+.project
+
