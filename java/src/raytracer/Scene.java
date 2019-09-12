@@ -12,22 +12,21 @@ public class Scene {
 	
 	public Vec3 color(Ray3 r) {
 		/* Find the nearest surface which r intersects */
-		Surface nearest = null;
-		double nearestT = Double.POSITIVE_INFINITY;
+		HitRecord nearestHitRecord = null;
 		
 		for (int i = 0; i < surfaces.size(); i++) {
 			HitRecord hitRecord = surfaces.get(i).intersect(r);
 			
-			// a miss is -INFINITY, and all t < 0 are behind us. Skip em
-	        if (hitRecord.getT() < nearestT && hitRecord.getT() > 0) {
-	            nearestT = hitRecord.getT();
-	            nearest = surfaces.get(i);
+	        if (nearestHitRecord == null && hitRecord.getT() > 0) {
+	            nearestHitRecord = hitRecord;
+	        }
+	        else if (hitRecord.getT() > 0 && hitRecord.getT() < nearestHitRecord.getT()) {
+	        	nearestHitRecord = hitRecord;
 	        }
 		}
 		
 		/* BASE CASE: no intersection; return sky color by default */
-
-	    if (nearestT == Double.POSITIVE_INFINITY) {
+	    if (nearestHitRecord == null || !nearestHitRecord.didIntersect()) {
 	        // normalize direction of ray so all values of y will be consistent
 	        Vec3 unitDirection = Vec3.normalize(r.getDirection());
 
@@ -35,7 +34,7 @@ public class Scene {
 	        double t = 0.5 * (unitDirection.getY() + 1.0);
 
 	        // base color of sky
-	        Vec3 baseSkyColor = new Vec3(0.5, 0.7, 1.0);
+	        Vec3 baseSkyColor = new Vec3(0.3, 0.5, 1.0);
 	        baseSkyColor = Vec3.scale(baseSkyColor, t);
 
 	        // what color the sky fades into, going down
@@ -50,16 +49,14 @@ public class Scene {
 	    
 	    /* nearest now contains the nearest surface; calculate the color */
 
-	    HitRecord hitRecord = nearest.intersect(r);
-
 	    // point of intersection is where r intersected the surface in xyz space
-	    Vec3 pointOfIntersection = r.pointAtParameter(hitRecord.getT());
+	    Vec3 pointOfIntersection = r.pointAtParameter(nearestHitRecord.getT());
 
 	    // bounce towards a random point in the unit sphere tangent to the hit point
 	    Vec3 bounceNoise = Vec3.randomInUnitSphere();
 
 	    // the direction of this bounce is the normal plus the randomness (noise)
-	    Vec3 bounceDirection = Vec3.add(hitRecord.getNormal(), bounceNoise);
+	    Vec3 bounceDirection = Vec3.add(nearestHitRecord.getNormal(), bounceNoise);
 
 	    // the next spot we aim for (target) is the p_o_i modified by our bounce direction
 	    Vec3 target = Vec3.add(pointOfIntersection, bounceDirection);
@@ -74,7 +71,8 @@ public class Scene {
 	    Vec3 newRayColor = color(newRay);
 	    
 	    // surfaces are 50% reflective
-	    return Vec3.scale(newRayColor, 0.5);
+	    // return Vec3.scale(newRayColor, 0.5);
+        return Vec3.normalize(nearestHitRecord.getNormal());
 	}
 	
 }

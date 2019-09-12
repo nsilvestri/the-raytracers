@@ -99,4 +99,12 @@ public class Vec3Test {
 		assertFalse(v1.equals(v5));
 		assertFalse(v5.equals(v1));
 	}
+	
+	@Test
+	public void testRandomInUnitSphere() {
+		// perform a statistical analysis to confirm that vectors are of length (0-1]
+		for (int i = 0; i < 100; i++) {
+			assertTrue(Vec3.randomInUnitSphere().length() <= 1);
+		}
+	}
 }

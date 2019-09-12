@@ -14,7 +14,7 @@ public class Raytracer {
 	    // set image properties
 	    int imageWidth = 200;
 	    int imageHeight = 100;
-	    int numSamples = 1;
+	    int numSamples = 10;
 	    
 		// Set up output file
 		FileOutputStream out = null;

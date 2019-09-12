@@ -105,14 +105,14 @@ public class Vec3 {
 		Random random = new Random();
 	    Vec3 v = null;
 	    while (true) {
-	        // vec3 with components a random length from -1 to +1
+	        // vec3 with components a random length from 0 to +1
 	        Vec3 randomVec3 = new Vec3(random.nextDouble(), random.nextDouble(), random.nextDouble());
-	        // double it; components random from -2 to +2
+	        // double it; components random from 0 to +2
 	        randomVec3 = Vec3.scale(randomVec3, 2);
 	        // this is just a vec3 with all 1 components. Bad name. Whatever.
 	        Vec3 cubeDiag = new Vec3(1, 1, 1);
 	        // we will create a vec3 that lands somewhere in the -1 to +1 cube
-	        Vec3 unitCubeVec3 = Vec3.sub(randomVec3, cubeDiag);
+	        Vec3 unitCubeVec3 = Vec3.sub(cubeDiag, randomVec3);
 
 	        // check if unit_cube_vec3 is longer than 1; AKA, outside of the unit sphere.
 	        if (unitCubeVec3.length() < 1.0) {

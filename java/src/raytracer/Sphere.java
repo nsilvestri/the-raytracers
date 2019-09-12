@@ -28,7 +28,7 @@ public class Sphere extends Surface {
         HitRecord hitRecord = null;
         if (discriminant < 0) {
         	// no intersection
-            hitRecord = new HitRecord(false, Double.NEGATIVE_INFINITY, null);
+            hitRecord = new HitRecord(this, false, Double.NEGATIVE_INFINITY, null);
         }
         else {
             // there are two roots; we need the closer (smaller) one
@@ -43,7 +43,7 @@ public class Sphere extends Surface {
             // normalize the normal because why not? Might not be totally necessary
             Vec3 normal = Vec3.normalize(normal_direction);
             
-            hitRecord = new HitRecord(true, t, normal);
+            hitRecord = new HitRecord(this, true, t, normal);
         }
         return hitRecord;
 	}
