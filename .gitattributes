@@ -1,1 +1,4 @@
 c/*.h linguist-language=C
+c/*.c linguist-language=C
+cpp/include/*.hpp linguist-language=C++
+cpp/src/*.cpp linguist-language=C++
