@@ -10,9 +10,18 @@ public class Scene {
 		this.surfaces = surfaces;
 	}
 
+	/**
+	 * Return the color that should be returned given a Ray3 interacting with this
+	 * Scene. This function implements full recursive bouncing, taking materials
+	 * into account.
+	 * 
+	 * @param r the Ray3 to generate a color from
+	 * @return a Vec3 whose components represent the color generated from a Ray3
+	 *         interacting with this Scene.
+	 */
 	public Vec3 color(Ray3 r) {
 		/* Find the nearest surface which r intersects */
-		HitRecord nearestHitRecord = findNearestSurfaceHit(r);
+		HitRecord nearestHitRecord = intersectNearestSurface(r);
 
 		/* BASE CASE: no intersection; return sky color by default */
 		if (!nearestHitRecord.didIntersect()) {
@@ -47,7 +56,8 @@ public class Scene {
 		// the direction of this bounce is the normal plus the randomness (noise)
 		Vec3 bounceDirection = Vec3.add(nearestHitRecord.getNormal(), bounceNoise);
 
-		// the next spot we aim for (target) is the p_o_i modified by our bounce direction
+		// the next spot we aim for (target) is the p_o_i modified by our bounce
+		// direction
 		Vec3 target = Vec3.add(pointOfIntersection, bounceDirection);
 
 		// the direction of the new ray is the target position - p_o_i
@@ -63,9 +73,20 @@ public class Scene {
 		return Vec3.scale(newRayColor, 0.5);
 	}
 
+	/**
+	 * Return the color red if the given Ray3 intersects with a Surface, and a blue
+	 * vector otherwise.
+	 * 
+	 * Useful for checking if intersections are being calculated correctly. There is
+	 * no recursive bouncing with this function.
+	 * 
+	 * @param r the Ray3 to generate a color from
+	 * @return a Vec3 color with full red on intersection with a surface, and blue
+	 *         otherwise.
+	 */
 	public Vec3 colorFlat(Ray3 r) {
 		/* Find the nearest surface which r intersects */
-		HitRecord nearestHitRecord = findNearestSurfaceHit(r);
+		HitRecord nearestHitRecord = intersectNearestSurface(r);
 
 		/* BASE CASE: no intersection; return sky color by default */
 		if (!nearestHitRecord.didIntersect()) {
@@ -75,7 +96,14 @@ public class Scene {
 		return new Vec3(1, 0, 0);
 	}
 
-	public HitRecord findNearestSurfaceHit(Ray3 r) {
+	/**
+	 * Find the nearest Surface in this Scene that would be hit.
+	 * 
+	 * @param r the Ray3 to check intersection
+	 * @return a HitRecord with data filled with the appropriate information
+	 */
+	public HitRecord intersectNearestSurface(Ray3 r) {
+		// default is a hitRecord with no intersection and +inifinity T
 		HitRecord nearestHitRecord = new HitRecord();
 
 		for (int i = 0; i < surfaces.size(); i++) {
@@ -86,6 +114,8 @@ public class Scene {
 				continue;
 			}
 
+			// T must be positive (in front of the camera), and closer than the current
+			// nearest
 			if (hitRecord.getT() > 0 && hitRecord.getT() < nearestHitRecord.getT()) {
 				nearestHitRecord = hitRecord;
 			}
