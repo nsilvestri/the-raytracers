@@ -12,9 +12,9 @@ public class Raytracer {
 	public static void main(String[] args) {
 		
 	    // set image properties
-	    int imageWidth = 200;
-	    int imageHeight = 100;
-	    int numSamples = 10;
+	    int imageWidth = 800;
+	    int imageHeight = 400;
+	    int numSamples = 1000;
 	    
 		// Set up output file
 		FileOutputStream out = null;
@@ -38,7 +38,7 @@ public class Raytracer {
 		// set up image dimensions in scene
 	    Vec3 lowerLeftCorner = new Vec3(-2, -1, -1);
 	    Vec3 horizontal = new Vec3(4, 0, 0);
-	    Vec3 vertical = new Vec3(2, 0, 0);
+	    Vec3 vertical = new Vec3(0, 2, 0);
 	    Vec3 origin = new Vec3(0, 0, 0);
 	    
 	    List<Surface> surfaces = new ArrayList<Surface>();

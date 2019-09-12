@@ -1,10 +1,17 @@
 package raytracer;
 
 public class HitRecord {
-	private Surface surface;
 	private boolean intersected;
 	private double t;
+	private Surface surface;
 	private Vec3 normal;
+	
+	public HitRecord() {
+		this.intersected = false;
+		this.t = Double.POSITIVE_INFINITY;
+		this.surface = null;
+		this.normal = null;
+	}
 	
 	public HitRecord(Surface surface, boolean intersected, double t, Vec3 normal) {
 		this.intersected = intersected;
