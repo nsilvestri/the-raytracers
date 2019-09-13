@@ -120,4 +120,12 @@ public class Vec3 {
 	        }
 	    }
 	}
+	
+	public static Vec3 gammaCorrect(Vec3 v, double gamma) {
+		Vec3 result = new Vec3(0, 0, 0);
+		result.x = Math.pow(v.getX(), gamma);
+		result.y = Math.pow(v.getY(), gamma);
+		result.z = Math.pow(v.getZ(), gamma);
+		return result;
+	}
 }

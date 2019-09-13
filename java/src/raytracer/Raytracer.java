@@ -12,9 +12,9 @@ public class Raytracer {
 	public static void main(String[] args) {
 		
 	    // set image properties
-	    int imageWidth = 800;
-	    int imageHeight = 400;
-	    int numSamples = 1000;
+	    int imageWidth = 200;
+	    int imageHeight = 100;
+	    int numSamples = 10;
 	    
 		// Set up output file
 		FileOutputStream out = null;
@@ -66,6 +66,9 @@ public class Raytracer {
 	    			Ray3 r = new Ray3(origin, direction);
 	    			
 	    			Vec3 colorSample = scene.color(r);
+	    			
+	    			// gamma correct sample
+	    			colorSample = Vec3.gammaCorrect(colorSample, 0.5);
 	    			pixelColor = Vec3.add(pixelColor, colorSample);
 	    		}
 	    		
