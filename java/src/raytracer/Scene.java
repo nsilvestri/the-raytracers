@@ -66,11 +66,18 @@ public class Scene {
 		// create the new ray cenetered on our p_o_i pointing in our new direction
 		Ray3 newRay = new Ray3(pointOfIntersection, newRayDirection);
 
+		/* Determine color, either from absorption or reflection */
+		Vec3 newRayColor = null;
 		// recursive bouncing color
-		Vec3 newRayColor = color(newRay);
+		if (nearestHitRecord.getSurface().getMaterial().shouldReflect()) {
+			newRayColor = color(newRay);
+		}
+		else {
+			newRayColor = nearestHitRecord.getSurface().getMaterial().getColor();
+		}
 
 		// surfaces are 50% reflective
-		return Vec3.scale(newRayColor, 0.5);
+		return newRayColor;
 	}
 
 	/**

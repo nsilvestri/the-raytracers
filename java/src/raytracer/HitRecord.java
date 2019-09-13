@@ -14,6 +14,7 @@ public class HitRecord {
 	}
 	
 	public HitRecord(Surface surface, boolean intersected, double t, Vec3 normal) {
+		this.surface = surface;
 		this.intersected = intersected;
 		this.t = t;
 		this.normal = normal;

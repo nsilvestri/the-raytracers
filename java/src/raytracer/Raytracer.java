@@ -12,9 +12,9 @@ public class Raytracer {
 	public static void main(String[] args) {
 		
 	    // set image properties
-	    int imageWidth = 200;
-	    int imageHeight = 100;
-	    int numSamples = 10;
+	    int imageWidth = 800;
+	    int imageHeight = 400;
+	    int numSamples = 1000;
 	    
 		// Set up output file
 		FileOutputStream out = null;
@@ -42,8 +42,12 @@ public class Raytracer {
 	    Vec3 origin = new Vec3(0, 0, 0);
 	    
 	    List<Surface> surfaces = new ArrayList<Surface>();
-	    surfaces.add(new Sphere(new Vec3(0, 0, -1), 0.5));
-	    surfaces.add(new Sphere(new Vec3(0, -100.5, -1), 100));
+	    Material redShiny = new Material(new Vec3(0.9, 0, 0), 0.8);
+	    Material neutral = new Material(new Vec3(0.5, 0.5, 0.5), 0.5);
+	    Material mirror = new Material(new Vec3(0, 0, 0), 1.0);
+	    surfaces.add(new Sphere(new Vec3(-0.5, 0, -1), 0.5, redShiny));
+	    surfaces.add(new Sphere(new Vec3(0.5, 0, -1), 0.5, mirror));
+	    surfaces.add(new Sphere(new Vec3(0, -100.5, -1), 100, neutral));
 	    
 	    Scene scene = new Scene(surfaces);
 	    
@@ -84,7 +88,6 @@ public class Raytracer {
 	            try {
 					out.write(line.getBytes());
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 					System.exit(1);
 				}

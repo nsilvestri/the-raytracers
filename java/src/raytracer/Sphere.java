@@ -5,7 +5,8 @@ public class Sphere extends Surface {
 	private Vec3 origin;
 	private double radius;
 	
-	public Sphere(Vec3 origin, double radius) {
+	public Sphere(Vec3 origin, double radius, Material material) {
+		super(material);
 		this.origin = origin;
 		this.radius = radius;
 	}
