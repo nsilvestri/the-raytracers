@@ -42,12 +42,14 @@ public class Raytracer {
 	    Vec3 origin = new Vec3(0, 0, 0);
 	    
 	    List<Surface> surfaces = new ArrayList<Surface>();
-	    Material redShiny = new Material(new Vec3(0.9, 0, 0), 0.8);
-	    Material neutral = new Material(new Vec3(0.5, 0.5, 0.5), 0.5);
-	    Material mirror = new Material(new Vec3(0, 0, 0), 1.0);
-	    surfaces.add(new Sphere(new Vec3(-0.5, 0, -1), 0.5, redShiny));
-	    surfaces.add(new Sphere(new Vec3(0.5, 0, -1), 0.5, mirror));
-	    surfaces.add(new Sphere(new Vec3(0, -100.5, -1), 100, neutral));
+	    Material metal = new Metal(0.7);
+	    Material matte = new Lambertian(0.5, new Vec3(0.5, 0.5, 0.5));
+	    Material redMatte = new Lambertian(0.5, new Vec3(1.0, 0.3, 0.3));
+	    Material blueMatte = new Lambertian(0.8, new Vec3(0.5, 0.5, 1.0));
+	    surfaces.add(new Sphere(new Vec3(-1.0, 0, -1), 0.5, redMatte));
+	    surfaces.add(new Sphere(new Vec3(0, -0.1, -1), 0.4, metal));
+	    surfaces.add(new Sphere(new Vec3(0.75, -0.2, -0.5), 0.3, blueMatte));
+	    surfaces.add(new Sphere(new Vec3(0, -100.5, -1), 100, matte));
 	    
 	    Scene scene = new Scene(surfaces);
 	    

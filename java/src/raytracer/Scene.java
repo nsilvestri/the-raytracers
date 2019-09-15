@@ -47,37 +47,21 @@ public class Scene {
 
 		/* nearest now contains the nearest surface; calculate the color */
 
-		// point of intersection is where r intersected the surface in xyz space
-		Vec3 pointOfIntersection = r.pointAtParameter(nearestHitRecord.getT());
-
-		// bounce towards a random point in the unit sphere tangent to the hit point
-		Vec3 bounceNoise = Vec3.randomInUnitSphere();
-
-		// the direction of this bounce is the normal plus the randomness (noise)
-		Vec3 bounceDirection = Vec3.add(nearestHitRecord.getNormal(), bounceNoise);
-
-		// the next spot we aim for (target) is the p_o_i modified by our bounce
-		// direction
-		Vec3 target = Vec3.add(pointOfIntersection, bounceDirection);
-
-		// the direction of the new ray is the target position - p_o_i
-		Vec3 newRayDirection = Vec3.sub(target, pointOfIntersection);
-
-		// create the new ray cenetered on our p_o_i pointing in our new direction
-		Ray3 newRay = new Ray3(pointOfIntersection, newRayDirection);
-
 		/* Determine color, either from absorption or reflection */
 		Vec3 newRayColor = null;
+		Surface hitSurface = nearestHitRecord.getSurface();
+		
 		// recursive bouncing color
-		if (nearestHitRecord.getSurface().getMaterial().shouldReflect()) {
-			newRayColor = color(newRay);
-		}
-		else {
-			newRayColor = nearestHitRecord.getSurface().getMaterial().getColor();
+		if (hitSurface.getMaterial().shouldScatter()) {
+			Vec3 pointOfIntersection = r.pointAtParameter(nearestHitRecord.getT());
+			Ray3 scattered = hitSurface.getMaterial().scatter(r, pointOfIntersection, nearestHitRecord.getNormal());
+			newRayColor = color(scattered);
+		} else {
+			newRayColor = hitSurface.getMaterial().getColor();
 		}
 
-		// surfaces are 50% reflective
-		return newRayColor;
+		// attenuate color by albedo
+		return Vec3.scale(newRayColor, hitSurface.getMaterial().getAlbedo());
 	}
 
 	/**

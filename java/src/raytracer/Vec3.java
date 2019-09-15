@@ -121,11 +121,17 @@ public class Vec3 {
 	    }
 	}
 	
-	public static Vec3 gammaCorrect(Vec3 v, double gamma) {
+	public static Vec3 reflect(Vec3 v, Vec3 normal) {
+		// return v - 2 * dot(v, n) * n
+		double twoDotVN = 2 * Vec3.dot(v, normal);
+		return Vec3.sub(v, Vec3.scale(normal, 2 * twoDotVN));
+	}
+	
+	public static Vec3 gammaCorrect(Vec3 color, double gamma) {
 		Vec3 result = new Vec3(0, 0, 0);
-		result.x = Math.pow(v.getX(), gamma);
-		result.y = Math.pow(v.getY(), gamma);
-		result.z = Math.pow(v.getZ(), gamma);
+		result.x = Math.pow(color.getX(), gamma);
+		result.y = Math.pow(color.getY(), gamma);
+		result.z = Math.pow(color.getZ(), gamma);
 		return result;
 	}
 }

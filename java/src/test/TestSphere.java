@@ -16,7 +16,7 @@ public class TestSphere {
 	public void testInitialization() {
 		Vec3 center = new Vec3(0, 0, 0);
 		double radius = 1;
-		Sphere s = new Sphere(center, 1);
+		Sphere s = new Sphere(center, 1, null);
 		assertEquals(center, s.getOrigin());
 		assertEquals(radius, s.getRadius());
 		
@@ -25,7 +25,7 @@ public class TestSphere {
 	
 	@Test
 	public void testIntersectionWithRay() {
-		Sphere s = new Sphere(new Vec3(0, 0, -1), 0.5);
+		Sphere s = new Sphere(new Vec3(0, 0, -1), 0.5, null);
 		
 		// direct hit through center
 		Ray3 r = new Ray3(new Vec3(0, 0, 0), new Vec3(0, 0, -1));
@@ -43,7 +43,7 @@ public class TestSphere {
 	
 	@Test
 	public void testNoIntersectionWithRay() {
-		Sphere s = new Sphere(new Vec3(0, 0, -1), 0.5);
+		Sphere s = new Sphere(new Vec3(0, 0, -1), 0.5, null);
 		
 		// miss
 		Ray3 r = new Ray3(new Vec3(0, 0, 0), new Vec3(0, 1, 0));
