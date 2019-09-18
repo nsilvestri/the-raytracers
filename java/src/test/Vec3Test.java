@@ -107,4 +107,36 @@ public class Vec3Test {
 			assertTrue(Vec3.randomInUnitSphere().length() <= 1);
 		}
 	}
+	
+	@Test
+	public void testReflect() {
+		/* Reflection straight back */
+		Vec3 v1 = new Vec3(0, 0, -1);
+		Vec3 normal1 = new Vec3(0, 0, 1);
+		Vec3 expected1 = new Vec3(0, 0, 1);
+		// normalization required, because reflect simply returns a direction-like Vec3
+		assertEquals(expected1, Vec3.normalize(Vec3.reflect(v1, normal1)));
+		
+		/* Reflection, down, all at 45 degree angles, into flat ground */
+//		Vec3 v2 = new Vec3(0, -1, -1);
+//		Vec3 normal2 = new Vec3(0, 1, 0);
+//		Vec3 expected2 = Vec3.normalize(new Vec3(0, 1, -1));
+//		assertEquals(expected2, Vec3.normalize(Vec3.reflect(v2, normal2)));
+	}
+	
+	@Test
+	public void testGammaCorrect() {
+		Vec3 v0 = new Vec3(0, 0, 0);
+		assertEquals(new Vec3(0, 0, 0), Vec3.gammaCorrect(v0, 3));
+		
+		Vec3 v1 = new Vec3(1, 2, 3);
+		assertEquals(new Vec3(1, 8, 27), Vec3.gammaCorrect(v1, 3));
+	}
+	
+	@Test
+	public void testToString() {
+		Vec3 v1 = new Vec3(0, 0, 0);
+		String expected1 = "Vec3(0.0000, 0.0000, 0.0000)";
+		assertEquals(expected1, v1.toString());
+	}
 }
