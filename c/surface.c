@@ -5,13 +5,15 @@
 #include "vec3.h"
 #include "ray3.h"
 #include "surface.h"
+#include "material.h"
 
-surface* surface_sphere_make(vec3* position, float radius) {
+surface* surface_sphere_make(vec3* position, float radius, material* m) {
     surface* s = malloc(sizeof(surface));
     if (s == NULL) {
         fprintf(stderr, "Out of memory");
     }
     s->type = SURFACE_SPHERE;
+    s->material = m;
     s->sphere_origin = position;
     s->sphere_radius = radius;
     return s;

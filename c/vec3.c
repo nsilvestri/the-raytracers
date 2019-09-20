@@ -81,10 +81,18 @@ vec3* vec3_random_in_unit_sphere() {
     }
 }
 
-vec3* vec3_gamma_correct(vec3* color, float gamma) {
-    vec3* result = vec3_make(0, 0, 0);
+vec3* vec3_gamma_correct(vec3* result, vec3* color, float gamma) {
     result->x = pow(color->x, gamma);
     result->y = pow(color->y, gamma);
     result->z = pow(color->z, gamma);
+    return result;
+}
+
+vec3* vec3_reflect(vec3* result, vec3* v, vec3* normal) {
+    // return v - 2 * dot(v, n) * n
+    float two_dot_VN = 2 * vec3_dot(v, normal);
+    vec3* scaled_normal = vec3_scale(vec3_make(0, 0, 0), normal, 2 * two_dot_VN);
+    result = vec3_sub(result, v, scaled_normal);
+    free(scaled_normal);
     return result;
 }

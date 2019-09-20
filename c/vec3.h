@@ -109,6 +109,13 @@ vec3* vec3_random_in_unit_sphere();
  * 
  * @return vec3* a vec3 with each component taken to the power of gamma.
  */
-vec3* vec3_gamma_correct(vec3* color, float gamma);
+vec3* vec3_gamma_correct(vec3* result, vec3* color, float gamma);
+
+/**
+ * @brief Calculates the vec3 that would be reflected from a given ray and
+ * normal.
+ * 
+ */
+vec3* vec3_reflect(vec3* result, vec3* v, vec3* normal);
 
 #endif
