@@ -80,3 +80,11 @@ vec3* vec3_random_in_unit_sphere() {
         free(unit_cube_vec3);
     }
 }
+
+vec3* vec3_gamma_correct(vec3* color, float gamma) {
+    vec3* result = vec3_make(0, 0, 0);
+    result->x = pow(color->x, gamma);
+    result->y = pow(color->y, gamma);
+    result->z = pow(color->z, gamma);
+    return result;
+}

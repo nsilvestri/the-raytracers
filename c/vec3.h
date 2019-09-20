@@ -104,4 +104,11 @@ vec3* vec3_cross(vec3* result, vec3* v1, vec3* v2);
  */
 vec3* vec3_random_in_unit_sphere();
 
+/**
+ * @brief Returns a vec3 with each component taken to the power of gamma.
+ * 
+ * @return vec3* a vec3 with each component taken to the power of gamma.
+ */
+vec3* vec3_gamma_correct(vec3* color, float gamma);
+
 #endif

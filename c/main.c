@@ -70,8 +70,11 @@ int main(int argc, char** argv) {
                 // get our color sample for our single ray from the world
                 vec3* color_sample = scene_color(r, surfaces, 2);
 
+                // gamma correct sample
+                vec3* color_sample_gamma = vec3_gamma_correct(color_sample, 0.5);
+
                 // add sample color to color total for this pixel
-                pixel_color = vec3_add(pixel_color, pixel_color, color_sample);
+                pixel_color = vec3_add(pixel_color, pixel_color, color_sample_gamma);
 
                 // clean up
                 free(horizontal_offset);
@@ -82,6 +85,7 @@ int main(int argc, char** argv) {
                 free(r); // direction is freed explicitly above; origin is used later so don't free
 
                 free(color_sample);
+                free(color_sample_gamma);
             }
             
             // pixel_color contains the total of all samples; get the average of each sample
