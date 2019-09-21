@@ -30,8 +30,10 @@ int main(int argc, char** argv) {
     vec3* origin = vec3_make(0.0, 0.0, 0.0);
 
     // manually add surfaces (for now)
-    surface* sphere = surface_sphere_make(vec3_make(0, 0, -1), 0.5);
-    surface* sphere_big = surface_sphere_make(vec3_make(0, -100.5, -1), 100);
+    material* copper = material_metal_make(0.8, vec3_make(0.8, 0.7, 0.3), 0.3);
+    material* mirror = material_metal_make(1, vec3_make(0, 0, 0), 0.01);
+    surface* sphere = surface_sphere_make(vec3_make(0, 0, -1), 0.5, copper);
+    surface* sphere_big = surface_sphere_make(vec3_make(0, -100.5, -1), 100, mirror);
     surface* surfaces[2] = { sphere, sphere_big };
 
     // benchmarking
@@ -71,7 +73,7 @@ int main(int argc, char** argv) {
                 vec3* color_sample = scene_color(r, surfaces, 2);
 
                 // gamma correct sample
-                vec3* color_sample_gamma = vec3_gamma_correct(color_sample, 0.5);
+                vec3* color_sample_gamma = vec3_gamma_correct(vec3_make(0, 0, 0), color_sample, 0.5);
 
                 // add sample color to color total for this pixel
                 pixel_color = vec3_add(pixel_color, pixel_color, color_sample_gamma);

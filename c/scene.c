@@ -5,6 +5,7 @@
 #include "vec3.h"
 #include "ray3.h"
 #include "surface.h"
+#include "material.h"
 
 vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
     /* Find the nearest surface which r intersects */
@@ -77,7 +78,15 @@ vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
     ray3* new_ray = ray3_make(point_of_intersection, new_ray_direction);
 
     // recursive bouncing color
-    vec3* new_ray_color = scene_color(new_ray, surfaces, num_surfaces);
+    vec3* new_ray_color;
+    if (material_should_scatter(nearest->material)) {
+        ray3* scattered = material_scatter(nearest->material, r, point_of_intersection, hit_record->normal);
+        new_ray_color = scene_color(scattered, surfaces, num_surfaces);
+    }
+    else {
+        new_ray_color = nearest->material->color;
+    }
+    new_ray_color = scene_color(new_ray, surfaces, num_surfaces);
 
     // clean up
     free(hit_record->normal);
@@ -90,7 +99,7 @@ vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
     free(new_ray_direction);
     free(new_ray);
 
-    // surfaces are 50% reflective
-    return vec3_scale(new_ray_color, new_ray_color, 0.5);
+    // attenuate color by albedo
+    return vec3_scale(new_ray_color, new_ray_color, nearest->material->albedo);
 }
  
