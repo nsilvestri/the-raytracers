@@ -12,7 +12,7 @@ typedef enum {
 
 typedef struct {
     surface_type type;
-    material* material;
+    material* mat;
 
     vec3* sphere_origin;
     float sphere_radius;

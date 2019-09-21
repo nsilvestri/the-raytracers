@@ -16,9 +16,9 @@ int main(int argc, char** argv) {
     srand48(time(NULL));
 
     // set image properties
-    int image_width = 200;
-    int image_height = 100;
-    int num_samples = 10;
+    int image_width = 400;
+    int image_height = 200;
+    int num_samples = 100;
 
     // write PPM header
     printf("P3\n%d %d\n255\n", image_width, image_height);
@@ -30,8 +30,10 @@ int main(int argc, char** argv) {
     vec3* origin = vec3_make(0.0, 0.0, 0.0);
 
     // manually add surfaces (for now)
-    surface* sphere = surface_sphere_make(vec3_make(0, 0, -1), 0.5);
-    surface* sphere_big = surface_sphere_make(vec3_make(0, -100.5, -1), 100);
+    material* rough_copper = material_metal_make(0.7, vec3_make(1.0, 0.4, 0.05), 0.8);
+    material* mirror = material_metal_make(0.99, vec3_make(0, 0, 0), 0.0);
+    surface* sphere = surface_sphere_make(vec3_make(0, 0, -1), 0.5, mirror);
+    surface* sphere_big = surface_sphere_make(vec3_make(0, -100.5, -1), 100, rough_copper);
     surface* surfaces[2] = { sphere, sphere_big };
 
     // benchmarking
@@ -71,7 +73,7 @@ int main(int argc, char** argv) {
                 vec3* color_sample = scene_color(r, surfaces, 2);
 
                 // gamma correct sample
-                vec3* color_sample_gamma = vec3_gamma_correct(color_sample, 0.5);
+                vec3* color_sample_gamma = vec3_gamma_correct(vec3_make(0, 0, 0), color_sample, 0.5);
 
                 // add sample color to color total for this pixel
                 pixel_color = vec3_add(pixel_color, pixel_color, color_sample_gamma);
@@ -84,7 +86,6 @@ int main(int argc, char** argv) {
                 free(direction);
                 free(r); // direction is freed explicitly above; origin is used later so don't free
 
-                free(color_sample);
                 free(color_sample_gamma);
             }
             
@@ -109,6 +110,11 @@ int main(int argc, char** argv) {
     free(horizontal);
     free(vertical);
     free(origin);
+
+    free(rough_copper->color);
+    free(rough_copper);
+    free(mirror->color);
+    free(mirror);
 
     free(sphere->sphere_origin);
     free(sphere);

@@ -1,10 +1,12 @@
 #include <math.h>
 #include <stdlib.h>
+#include <stdio.h>
 
 #include "scene.h"
 #include "vec3.h"
 #include "ray3.h"
 #include "surface.h"
+#include "material.h"
 
 vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
     /* Find the nearest surface which r intersects */
@@ -61,36 +63,26 @@ vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
     // point of intersection is where r intersected the surface in xyz space
     vec3* point_of_intersection = ray3_point_at_parameter(vec3_make(0, 0, 0), r, hit_record->t);
 
-    // bounce towards a random point in the unit sphere tangent to the hit point
-    vec3* bounce_noise = vec3_random_in_unit_sphere();
-
-    // the direction of this bounce is the normal plus the randomness (noise)
-    vec3* bounce_direction = vec3_add(vec3_make(0, 0, 0), hit_record->normal, bounce_noise);
-
-    // the next spot we aim for (target) is the p_o_i modified by our bounce direction
-    vec3* target = vec3_add(vec3_make(0, 0, 0), point_of_intersection, bounce_direction);
-
-    // the direction of the new ray is the target position - p_o_i
-    vec3* new_ray_direction = vec3_sub(vec3_make(0, 0, 0), target, point_of_intersection);
-
-    // create the new ray cenetered on our p_o_i pointing in our new direction
-    ray3* new_ray = ray3_make(point_of_intersection, new_ray_direction);
-
     // recursive bouncing color
-    vec3* new_ray_color = scene_color(new_ray, surfaces, num_surfaces);
+    vec3* new_ray_color;
+    if (material_should_scatter(nearest->mat)) {
+        ray3* scattered = material_scatter(nearest->mat, r, point_of_intersection, hit_record->normal);
+        new_ray_color = scene_color(scattered, surfaces, num_surfaces);
+        // attenuate color by albedo
+        vec3_scale(new_ray_color, new_ray_color, nearest->mat->albedo);
+        free(scattered->direction);
+        free(scattered);
+    }
+    else {
+        new_ray_color = nearest->mat->color;
+    }
 
     // clean up
     free(hit_record->normal);
     free(hit_record);
 
     free(point_of_intersection);
-    free(bounce_noise);
-    free(bounce_direction);
-    free(target);
-    free(new_ray_direction);
-    free(new_ray);
 
-    // surfaces are 50% reflective
-    return vec3_scale(new_ray_color, new_ray_color, 0.5);
+    return new_ray_color;
 }
  
