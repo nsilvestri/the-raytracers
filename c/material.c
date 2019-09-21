@@ -30,7 +30,6 @@ material* material_metal_make(float albedo, vec3* color, float roughness) {
     new_material->albedo = albedo;
     new_material->color = color;
     new_material->metal_roughness = roughness;
-
     return new_material;
 }
 
