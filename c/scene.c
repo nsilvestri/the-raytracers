@@ -60,18 +60,16 @@ vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
 
     hit_record* hit_record = surface_hit(nearest, r);
 
-    // point of intersection is where r intersected the surface in xyz space
-    vec3* point_of_intersection = ray3_point_at_parameter(vec3_make(0, 0, 0), r, hit_record->t);
-
     // recursive bouncing color
     vec3* new_ray_color;
     if (material_should_scatter(nearest->mat)) {
+        // point of intersection is where r intersected the surface in xyz space
+        vec3* point_of_intersection = ray3_point_at_parameter(vec3_make(0, 0, 0), r, hit_record->t);
         ray3* scattered = material_scatter(nearest->mat, r, point_of_intersection, hit_record->normal);
         new_ray_color = scene_color(scattered, surfaces, num_surfaces);
-        // attenuate color by albedo
-        vec3_scale(new_ray_color, new_ray_color, nearest->mat->albedo);
         free(scattered->direction);
         free(scattered);
+        free(point_of_intersection);
     }
     else {
         new_ray_color = nearest->mat->color;
@@ -81,8 +79,8 @@ vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
     free(hit_record->normal);
     free(hit_record);
 
-    free(point_of_intersection);
-
+    // attenuate color by albedo
+    vec3_scale(new_ray_color, new_ray_color, nearest->mat->albedo);
     return new_ray_color;
 }
  

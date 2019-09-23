@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     // set image properties
     int image_width = 400;
     int image_height = 200;
-    int num_samples = 100;
+    int num_samples = 10;
 
     // write PPM header
     printf("P3\n%d %d\n255\n", image_width, image_height);
@@ -30,11 +30,16 @@ int main(int argc, char** argv) {
     vec3* origin = vec3_make(0.0, 0.0, 0.0);
 
     // manually add surfaces (for now)
+    int num_surfaces = 4;
     material* rough_copper = material_metal_make(0.7, vec3_make(1.0, 0.4, 0.05), 0.8);
     material* mirror = material_metal_make(0.99, vec3_make(0, 0, 0), 0.0);
-    surface* sphere = surface_sphere_make(vec3_make(0, 0, -1), 0.5, mirror);
-    surface* sphere_big = surface_sphere_make(vec3_make(0, -100.5, -1), 100, rough_copper);
-    surface* surfaces[2] = { sphere, sphere_big };
+    material* green_matte = material_lambertian_make(0.5, vec3_make(0.8, 0.8, 0.0));
+    material* red_matte = material_lambertian_make(0.5, vec3_make(1.0, 0.3, 0.3));
+    surface* sphere_big = surface_sphere_make(vec3_make(0, -100.5, -1), 100, green_matte);
+    surface* sphere_red = surface_sphere_make(vec3_make(-1.0, 0, -1), 0.5, red_matte);
+    surface* sphere_copper = surface_sphere_make(vec3_make(0, -0.1, -1), 0.4, rough_copper);
+    surface* sphere_mirror = surface_sphere_make(vec3_make(0.75, -0.2, -0.5), 0.3, mirror);
+    surface* surfaces[4] = { sphere_big, sphere_red, sphere_copper, sphere_mirror };
 
     // benchmarking
     struct timespec start;
@@ -70,7 +75,7 @@ int main(int argc, char** argv) {
                 ray3* r = ray3_make(origin, direction);
 
                 // get our color sample for our single ray from the world
-                vec3* color_sample = scene_color(r, surfaces, 2);
+                vec3* color_sample = scene_color(r, surfaces, num_surfaces);
 
                 // gamma correct sample
                 vec3* color_sample_gamma = vec3_gamma_correct(vec3_make(0, 0, 0), color_sample, 0.5);
@@ -116,16 +121,10 @@ int main(int argc, char** argv) {
     free(mirror->color);
     free(mirror);
 
-    free(sphere->sphere_origin);
-    free(sphere);
-
-    free(sphere_big->sphere_origin);
-    free(sphere_big);
-
     // output benchmark
     struct timespec total = diff(start, stop);
     fprintf(stderr, "Total time: %d.%d seconds\n", total.tv_sec, total.tv_nsec);
-    fprintf(stderr, "Samples per second: %f", (float) (image_height * image_width * num_samples) / (total.tv_sec + ((float) total.tv_nsec / 1000000000)));
+    fprintf(stderr, "Samples per second: %f\n", (float) (image_height * image_width * num_samples) / (total.tv_sec + ((float) total.tv_nsec / 1000000000)));
 }
 
 /**
