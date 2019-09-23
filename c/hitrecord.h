@@ -5,9 +5,9 @@
 
 typedef struct hit_record {
     float t;
-    vec3* normal;
+    vec3 normal;
 } hit_record;
 
-hit_record* hit_record_new(float t, vec3* normal);
+hit_record hit_record_new(float t, vec3 normal);
 
 #endif 

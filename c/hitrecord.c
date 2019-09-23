@@ -4,12 +4,9 @@
 #include "hitrecord.h"
 #include "vec3.h"
 
-hit_record* hit_record_new(float t, vec3* normal) {
-    hit_record* hr = malloc(sizeof(hit_record));
-    if (hr == NULL) {
-        fprintf(stderr, "Out of memory");
-    }
-    hr->t = t;
-    hr->normal = normal;
+hit_record hit_record_new(float t, vec3 normal) {
+    hit_record hr;
+    hr.t = t;
+    hr.normal = normal;
     return hr;
 }

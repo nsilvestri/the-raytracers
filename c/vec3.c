@@ -4,15 +4,11 @@
 
 #include "vec3.h"
 
-vec3* vec3_new(float x, float y, float z) {
-    vec3* v = malloc(sizeof(vec3));
-    if (v == NULL) {
-        fprintf(stderr, "out of memory\n"); 
-        exit(1);
-    }
-    v->x = x;
-    v->y = y;
-    v->z = z;
+vec3 vec3_new(float x, float y, float z) {
+    vec3 v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
     return v;
 }
 

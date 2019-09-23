@@ -18,7 +18,7 @@ int main(int argc, char** argv) {
     // set image properties
     int image_width = 400;
     int image_height = 200;
-    int num_samples = 10;
+    int num_samples = 100;
 
     // write PPM header
     printf("P3\n%d %d\n255\n", image_width, image_height);
