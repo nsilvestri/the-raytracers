@@ -1,4 +1,5 @@
 .vscode/
+c/raytracer
 debug
 *.o
 *.ppm
