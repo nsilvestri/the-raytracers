@@ -7,15 +7,12 @@
 #include "surface.h"
 #include "material.h"
 
-surface* surface_sphere_new(vec3* position, float radius, material* m) {
-    surface* s = malloc(sizeof(surface));
-    if (s == NULL) {
-        fprintf(stderr, "Out of memory");
-    }
-    s->type = SURFACE_SPHERE;
-    s->mat = m;
-    s->sphere_origin = position;
-    s->sphere_radius = radius;
+surface surface_sphere_new(vec3 position, float radius, material m) {
+    surface s;
+    s.type = SURFACE_SPHERE;
+    s.mat = m;
+    s.sphere_origin = position;
+    s.sphere_radius = radius;
     return s;
 }
 
@@ -33,16 +30,16 @@ surface* surface_sphere_new(vec3* position, float radius, material* m) {
  * @return hit_record* a pointer to a hit_record populated with the appropriate
  *        t and normal vectors.
  */
-hit_record* surface_hit(surface* s, ray3* r) {
-    if (s->type == SURFACE_SPHERE) {
-        vec3* oc = vec3_sub(vec3_new(0, 0, 0), r->origin, s->sphere_origin);
+hit_record surface_hit(surface s, ray3 r) {
+    if (s.type == SURFACE_SPHERE) {
+        vec3 oc = vec3_sub(r.origin, s.sphere_origin);
         /* a, b, c are A, B, C of quadratic equation */
         // a = (dir . dir)
-        float a = vec3_dot(r->direction, r->direction);
+        float a = vec3_dot(r.direction, r.direction);
         // b = (dir . (eye - sphere_origin))
-        float b = 2 * vec3_dot(oc, r->direction);
+        float b = 2 * vec3_dot(oc, r.direction);
         // c = (ray_pos - sphere_center) . (ray_pos - sphere_center) - R^2
-        float c = vec3_dot(oc, oc) - (s->sphere_radius * s->sphere_radius);
+        float c = vec3_dot(oc, oc) - (s.sphere_radius * s.sphere_radius);
         // discr = B^2-4AC
         float discriminant = (b * b) - (4 * a * c);
 
@@ -59,27 +56,19 @@ hit_record* surface_hit(surface* s, ray3* r) {
         }
 
         // point_of_intersection is self-explanatory
-        vec3* point_of_intersection = ray3_point_at_parameter(vec3_new(0, 0, 0), r, t);
+        vec3 point_of_intersection = ray3_point_at_parameter(r, t);
         // normal_direction is the vec3 from sphere center to p_o_i
-        vec3* normal_direction = vec3_sub(vec3_new(0, 0, 0), point_of_intersection, s->sphere_origin);
+        vec3 normal_direction = vec3_sub(point_of_intersection, s.sphere_origin);
         // normalize the normal because why not? Might not be totally necessary
-        vec3* normal = vec3_normalize(vec3_new(0, 0, 0),  normal_direction);
-
-        // clean up
-        free(oc);
-        free(point_of_intersection);
-        free(normal_direction);
+        vec3 normal = vec3_normalize(normal_direction);
 
         return hit_record_new(t, normal);
     }
 }
 
-hit_record* hit_record_new(float t, vec3* normal) {
-    hit_record* hr = malloc(sizeof(hit_record));
-    if (hr == NULL) {
-        fprintf(stderr, "Out of memory");
-    }
-    hr->t = t;
-    hr->normal = normal;
+hit_record hit_record_new(float t, vec3 normal) {
+    hit_record hr;
+    hr.t = t;
+    hr.normal = normal;
     return hr;
 }

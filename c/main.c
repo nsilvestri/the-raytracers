@@ -16,30 +16,30 @@ int main(int argc, char** argv) {
     srand48(time(NULL));
 
     // set image properties
-    int image_width = 400;
-    int image_height = 200;
-    int num_samples = 100;
+    int image_width = 800;
+    int image_height = 400;
+    int num_samples = 1000;
 
     // write PPM header
     printf("P3\n%d %d\n255\n", image_width, image_height);
 
     // X-axis is left, Y is up, -Z is towards the screen
-    vec3* lower_left_corner = vec3_new(-2.0, -1.0, -1.0);
-    vec3* horizontal = vec3_new(4.0, 0.0, 0.0);
-    vec3* vertical = vec3_new(0.0, 2.0, 0.0);
-    vec3* origin = vec3_new(0.0, 0.0, 0.0);
+    vec3 lower_left_corner = vec3_new(-2.0, -1.0, -1.0);
+    vec3 horizontal = vec3_new(4.0, 0.0, 0.0);
+    vec3 vertical = vec3_new(0.0, 2.0, 0.0);
+    vec3 origin = vec3_new(0.0, 0.0, 0.0);
 
     // manually add surfaces (for now)
     int num_surfaces = 4;
-    material* rough_copper = material_metal_new(0.7, vec3_new(1.0, 0.4, 0.05), 0.8);
-    material* mirror = material_metal_new(0.99, vec3_new(0, 0, 0), 0.0);
-    material* green_matte = material_lambertian_new(0.5, vec3_new(0.8, 0.8, 0.0));
-    material* red_matte = material_lambertian_new(0.5, vec3_new(1.0, 0.3, 0.3));
-    surface* sphere_big = surface_sphere_new(vec3_new(0, -100.5, -1), 100, green_matte);
-    surface* sphere_red = surface_sphere_new(vec3_new(-1.0, 0, -1), 0.5, red_matte);
-    surface* sphere_copper = surface_sphere_new(vec3_new(0, -0.1, -1), 0.4, rough_copper);
-    surface* sphere_mirror = surface_sphere_new(vec3_new(0.75, -0.2, -0.5), 0.3, mirror);
-    surface* surfaces[4] = { sphere_big, sphere_red, sphere_copper, sphere_mirror };
+    material rough_copper = material_metal_new(0.7, vec3_new(1.0, 0.4, 0.05), 0.8);
+    material mirror = material_metal_new(0.99, vec3_new(0, 0, 0), 0.0);
+    material green_matte = material_lambertian_new(0.5, vec3_new(0.8, 0.8, 0.0));
+    material red_matte = material_lambertian_new(0.5, vec3_new(1.0, 0.3, 0.3));
+    surface sphere_big = surface_sphere_new(vec3_new(0, -100.5, -1), 100, green_matte);
+    surface sphere_red = surface_sphere_new(vec3_new(-1.0, 0, -1), 0.5, red_matte);
+    surface sphere_copper = surface_sphere_new(vec3_new(0, -0.1, -1), 0.4, rough_copper);
+    surface sphere_mirror = surface_sphere_new(vec3_new(0.75, -0.2, -0.5), 0.3, mirror);
+    surface surfaces[4] = { sphere_big, sphere_red, sphere_copper, sphere_mirror };
 
     // benchmarking
     struct timespec start;
@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
         // and left to right
         for (int i = 0; i < image_width; i++) {
             // create a vec3 to store the total color of this pixel
-            vec3* pixel_color = vec3_new(0, 0, 0);
+            vec3 pixel_color = vec3_new(0, 0, 0);
 
             // sample this pixel num_sample times
             for (int s = 0; s < num_samples; s++) {
@@ -60,48 +60,36 @@ int main(int argc, char** argv) {
                 float v = ((float) j / image_height) + (drand48() / image_height);
                 
                 // vec3 component for how for how far right to push our final ray
-                vec3* horizontal_offset = vec3_scale(vec3_new(0, 0, 0), horizontal, u);
+                vec3 horizontal_offset = vec3_scale(horizontal, u);
 
                 // vec3 component for how far up to push our final ray
-                vec3* vertical_offset = vec3_scale(vec3_new(0, 0, 0), vertical, v);
+                vec3 vertical_offset = vec3_scale(vertical, v);
 
                 // combine the two components above
-                vec3* total_offset = vec3_add(vec3_new(0, 0, 0), horizontal_offset, vertical_offset);
+                vec3 total_offset = vec3_add(horizontal_offset, vertical_offset);
 
                 // and add it to our lower-left corner to get the final direction
-                vec3* direction = vec3_add(vec3_new(0, 0, 0), lower_left_corner, total_offset);
+                vec3 direction = vec3_add(lower_left_corner, total_offset);
 
                 // create the ray with our camera position (origin) and calculated direction
-                ray3* r = ray3_new(origin, direction);
+                ray3 r = ray3_new(origin, direction);
 
                 // get our color sample for our single ray from the world
-                vec3* color_sample = scene_color(r, surfaces, num_surfaces);
+                vec3 color_sample = scene_color(r, surfaces, num_surfaces);
 
                 // gamma correct sample
-                vec3* color_sample_gamma = vec3_gamma_correct(vec3_new(0, 0, 0), color_sample, 0.5);
+                vec3 color_sample_gamma = vec3_gamma_correct(color_sample, 0.5);
 
                 // add sample color to color total for this pixel
-                pixel_color = vec3_add(pixel_color, pixel_color, color_sample_gamma);
+                pixel_color = vec3_add(pixel_color, color_sample_gamma);
 
-                // clean up
-                free(horizontal_offset);
-                free(vertical_offset);
-                free(total_offset);
-
-                free(direction);
-                free(r); // direction is freed explicitly above; origin is used later so don't free
-
-                free(color_sample_gamma);
             }
             
             // pixel_color contains the total of all samples; get the average of each sample
-            pixel_color = vec3_scale(pixel_color, pixel_color, 1.0 / num_samples);
+            pixel_color = vec3_scale(pixel_color, 1.0 / num_samples);
 
             // write pixel color to file
-            printf("%d %d %d\n", (int) (pixel_color->x * 255), (int) (pixel_color->y * 255), (int) (pixel_color->z * 255));
-
-            // clean up
-            free(pixel_color);
+            printf("%d %d %d\n", (int) (pixel_color.x * 255), (int) (pixel_color.y * 255), (int) (pixel_color.z * 255));
         }
     }
 
@@ -109,17 +97,6 @@ int main(int argc, char** argv) {
     struct timespec stop;
     clock_gettime(CLOCK_REALTIME, &stop);
     time_t end = time(NULL);
-
-    // clean up
-    free(lower_left_corner);
-    free(horizontal);
-    free(vertical);
-    free(origin);
-
-    free(rough_copper->color);
-    free(rough_copper);
-    free(mirror->color);
-    free(mirror);
 
     // output benchmark
     struct timespec total = diff(start, stop);

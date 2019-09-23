@@ -5,7 +5,6 @@
 #include "ray3.h"
 #include "surface.h"
 
-vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces);
-
+vec3 scene_color(ray3 r, surface* surfaces, int num_surfaces);
 
 #endif

@@ -1,4 +1,5 @@
-CC=gcc -O3
+CC=gcc -O3 -Wall
+CC_DEBUG=gcc -Wall
 
 raytracer : main.c vec3.o surface.o ray3.o scene.o material.o
 	$(CC) -o raytracer main.c vec3.o ray3.o surface.o scene.o material.o -lm
@@ -20,12 +21,12 @@ scene.o : scene.c scene.h vec3.o ray3.o surface.o material.o
 
 debug : 
 	make clean
-	$(CC) -c -g vec3.c 
-	$(CC) -c -g ray3.c
-	$(CC) -c -g surface.c
-	$(CC) -c -g scene.c
-	$(CC) -c -g material.c
-	$(CC) -g -o debug main.c vec3.o ray3.o surface.o scene.o material.o -lm
+	$(CC_DEBUG) -c -g vec3.c 
+	$(CC_DEBUG) -c -g ray3.c
+	$(CC_DEBUG) -c -g surface.c
+	$(CC_DEBUG) -c -g scene.c
+	$(CC_DEBUG) -c -g material.c
+	$(CC_DEBUG) -g -o debug main.c vec3.o ray3.o surface.o scene.o material.o -lm
 
 clean : 
 	rm -f raytracer debug *.o

@@ -12,14 +12,16 @@ typedef enum {
 } surface_type;
 
 typedef struct {
+    // fields for all surfaces
     surface_type type;
-    material* mat;
+    material mat;
 
-    vec3* sphere_origin;
+    // sphere specific fields
+    vec3 sphere_origin;
     float sphere_radius;
 } surface;
 
-surface* surface_sphere_new(vec3* position, float radius, material* m);
-hit_record* surface_hit(surface* s, ray3* r);
+surface surface_sphere_new(vec3 position, float radius, material m);
+hit_record surface_hit(surface s, ray3 r);
 
 #endif
