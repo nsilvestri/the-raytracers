@@ -43,13 +43,13 @@ public class Raytracer {
 	    
 	    List<Surface> surfaces = new ArrayList<Surface>();
 	    Material roughCopper = new Metal(0.7, new Vec3(1.0, 0.4, 0.05), 0.8);
-	    Material matte = new Lambertian(0.5, new Vec3(0.8, 0.8, 0.0));
-	    Material redMatte = new Lambertian(0.5, new Vec3(1.0, 0.3, 0.3));
 	    Material mirror = new Metal(0.99, new Vec3(0.0, 0.0, 0.0), 0);
+	    Material greenMatte = new Lambertian(0.5, new Vec3(0.8, 0.8, 0.0));
+	    Material redMatte = new Lambertian(0.5, new Vec3(1.0, 0.3, 0.3));
+	    surfaces.add(new Sphere(new Vec3(0, -100.5, -1), 100, greenMatte));
 	    surfaces.add(new Sphere(new Vec3(-1.0, 0, -1), 0.5, redMatte));
 	    surfaces.add(new Sphere(new Vec3(0, -0.1, -1), 0.4, roughCopper));
 	    surfaces.add(new Sphere(new Vec3(0.75, -0.2, -0.5), 0.3, mirror));
-	    surfaces.add(new Sphere(new Vec3(0, -100.5, -1), 100, matte));
 	    
 	    Scene scene = new Scene(surfaces);
 	    
