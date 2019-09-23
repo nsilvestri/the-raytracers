@@ -32,21 +32,21 @@ vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
 
     if (nearest_t == INFINITY) {
         // normalize direction of ray so all values of y will be consistent
-        vec3* unit_direction = vec3_normalize(vec3_make(0, 0, 0), r->direction);
+        vec3* unit_direction = vec3_normalize(vec3_new(0, 0, 0), r->direction);
 
         // proportion of sky color mixture based on y component (up-ness)
         float t = 0.5 * (unit_direction->y + 1.0);
 
         // base color of sky
-        vec3* base_sky_color = vec3_make(0.5, 0.7, 1.0);
+        vec3* base_sky_color = vec3_new(0.5, 0.7, 1.0);
         base_sky_color = vec3_scale(base_sky_color, base_sky_color, t);
 
         // what color the sky fades into, going down
-        vec3* sky_color_gradient = vec3_make(1, 1, 1);
+        vec3* sky_color_gradient = vec3_new(1, 1, 1);
         sky_color_gradient = vec3_scale(sky_color_gradient, sky_color_gradient, 1.0 - t);
 
         // add base_sky_color and sky_color_gradient
-        vec3* sky_color = vec3_add(vec3_make(0, 0, 0), base_sky_color, sky_color_gradient);
+        vec3* sky_color = vec3_add(vec3_new(0, 0, 0), base_sky_color, sky_color_gradient);
         
         // clean up
         free(unit_direction);
@@ -64,7 +64,7 @@ vec3* scene_color(ray3* r, surface** surfaces, int num_surfaces) {
     vec3* new_ray_color;
     if (material_should_scatter(nearest->mat)) {
         // point of intersection is where r intersected the surface in xyz space
-        vec3* point_of_intersection = ray3_point_at_parameter(vec3_make(0, 0, 0), r, hit_record->t);
+        vec3* point_of_intersection = ray3_point_at_parameter(vec3_new(0, 0, 0), r, hit_record->t);
         ray3* scattered = material_scatter(nearest->mat, r, point_of_intersection, hit_record->normal);
         new_ray_color = scene_color(scattered, surfaces, num_surfaces);
         free(scattered->direction);

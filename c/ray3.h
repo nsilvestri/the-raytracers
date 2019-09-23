@@ -8,7 +8,7 @@ typedef struct ray3 {
     vec3* direction;
 } ray3;
 
-ray3* ray3_make(vec3* origin, vec3* direction);
+ray3* ray3_new(vec3* origin, vec3* direction);
 
 /**
  * Calculate a point along r such that the point is the end of the vector

@@ -15,7 +15,7 @@ typedef struct vec3 {
  * @param z the z component of this vec3.
  * @return vec3* a pointer to the newly allocated vec3 struct.
  */
-vec3* vec3_make(float x, float y, float z);
+vec3* vec3_new(float x, float y, float z);
 
 /**
  * @brief Return the length of the given vec3.

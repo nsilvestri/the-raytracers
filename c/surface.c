@@ -7,7 +7,7 @@
 #include "surface.h"
 #include "material.h"
 
-surface* surface_sphere_make(vec3* position, float radius, material* m) {
+surface* surface_sphere_new(vec3* position, float radius, material* m) {
     surface* s = malloc(sizeof(surface));
     if (s == NULL) {
         fprintf(stderr, "Out of memory");
@@ -35,7 +35,7 @@ surface* surface_sphere_make(vec3* position, float radius, material* m) {
  */
 hit_record* surface_hit(surface* s, ray3* r) {
     if (s->type == SURFACE_SPHERE) {
-        vec3* oc = vec3_sub(vec3_make(0, 0, 0), r->origin, s->sphere_origin);
+        vec3* oc = vec3_sub(vec3_new(0, 0, 0), r->origin, s->sphere_origin);
         /* a, b, c are A, B, C of quadratic equation */
         // a = (dir . dir)
         float a = vec3_dot(r->direction, r->direction);
@@ -59,22 +59,22 @@ hit_record* surface_hit(surface* s, ray3* r) {
         }
 
         // point_of_intersection is self-explanatory
-        vec3* point_of_intersection = ray3_point_at_parameter(vec3_make(0, 0, 0), r, t);
+        vec3* point_of_intersection = ray3_point_at_parameter(vec3_new(0, 0, 0), r, t);
         // normal_direction is the vec3 from sphere center to p_o_i
-        vec3* normal_direction = vec3_sub(vec3_make(0, 0, 0), point_of_intersection, s->sphere_origin);
+        vec3* normal_direction = vec3_sub(vec3_new(0, 0, 0), point_of_intersection, s->sphere_origin);
         // normalize the normal because why not? Might not be totally necessary
-        vec3* normal = vec3_normalize(vec3_make(0, 0, 0),  normal_direction);
+        vec3* normal = vec3_normalize(vec3_new(0, 0, 0),  normal_direction);
 
         // clean up
         free(oc);
         free(point_of_intersection);
         free(normal_direction);
 
-        return hit_record_make(t, normal);
+        return hit_record_new(t, normal);
     }
 }
 
-hit_record* hit_record_make(float t, vec3* normal) {
+hit_record* hit_record_new(float t, vec3* normal) {
     hit_record* hr = malloc(sizeof(hit_record));
     if (hr == NULL) {
         fprintf(stderr, "Out of memory");

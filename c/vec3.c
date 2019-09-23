@@ -4,7 +4,7 @@
 
 #include "vec3.h"
 
-vec3* vec3_make(float x, float y, float z) {
+vec3* vec3_new(float x, float y, float z) {
     vec3* v = malloc(sizeof(vec3));
     if (v == NULL) {
         fprintf(stderr, "out of memory\n"); 
@@ -31,7 +31,7 @@ vec3* vec3_normalize(vec3* result, vec3* v) {
     // do degenerate case check
     float length = vec3_length(v);
     if (length == 0) {
-        result = vec3_make(0, 0, 0);
+        result = vec3_new(0, 0, 0);
         return result;
     }
 
@@ -59,13 +59,13 @@ vec3* vec3_random_in_unit_sphere() {
     vec3* v = NULL;
     while (1) {
         // vec3 with components a random length from -1 to +1
-        vec3* random_vec3 = vec3_make(drand48(), drand48(), drand48());
+        vec3* random_vec3 = vec3_new(drand48(), drand48(), drand48());
         // double it; components random from -2 to +2
         random_vec3 = vec3_scale(random_vec3, random_vec3, 2);
         // this is just a vec3 with all 1 components. Bad name. Whatever.
-        vec3* cube_diag = vec3_make(1, 1, 1);
+        vec3* cube_diag = vec3_new(1, 1, 1);
         // we will create a vec3 that lands somewhere in the -1 to +1 cube
-        vec3* unit_cube_vec3 = vec3_sub(vec3_make(0, 0, 0), cube_diag, random_vec3);
+        vec3* unit_cube_vec3 = vec3_sub(vec3_new(0, 0, 0), cube_diag, random_vec3);
 
         // clean up before check
         free(random_vec3);
@@ -91,7 +91,7 @@ vec3* vec3_gamma_correct(vec3* result, vec3* color, float gamma) {
 vec3* vec3_reflect(vec3* result, vec3* v, vec3* normal) {
     // return v - 2 * dot(v, n) * n
     float two_dot_VN = 2 * vec3_dot(v, normal);
-    vec3* scaled_normal = vec3_scale(vec3_make(0, 0, 0), normal, 2 * two_dot_VN);
+    vec3* scaled_normal = vec3_scale(vec3_new(0, 0, 0), normal, 2 * two_dot_VN);
     result = vec3_sub(result, v, scaled_normal);
     free(scaled_normal);
     return result;
