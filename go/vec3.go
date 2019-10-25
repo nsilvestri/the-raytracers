@@ -50,3 +50,8 @@ func (v Vec3) Normalize() Vec3 {
 func (v Vec3) Reflect(n Vec3) Vec3 {
 	return v.Sub(n.Scale(2 * v.Dot(n)))
 }
+
+// GammaCorrect interprets v as an RGB color vector and gamma corrects according to the given gamma
+func (v Vec3) GammaCorrect(gamma float64) Vec3 {
+	return Vec3{math.Pow(v.X, gamma), math.Pow(v.Y, gamma), math.Pow(v.Z, gamma)}
+}
