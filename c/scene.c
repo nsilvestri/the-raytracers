@@ -8,6 +8,26 @@
 #include "surface.h"
 #include "material.h"
 
+scene scene_new() {
+    scene s;
+    // manually add surfaces (for now)
+    s.num_surfaces = 4;
+    material rough_copper = material_metal_new(0.7, vec3_new(1.0, 0.4, 0.05), 0.8);
+    material mirror = material_metal_new(0.99, vec3_new(0, 0, 0), 0.0);
+    material green_matte = material_lambertian_new(0.5, vec3_new(0.8, 0.8, 0.0));
+    material red_matte = material_lambertian_new(0.5, vec3_new(1.0, 0.3, 0.3));
+    surface sphere_big = surface_sphere_new(vec3_new(0, -100.5, -1), 100, green_matte);
+    surface sphere_red = surface_sphere_new(vec3_new(-1.0, 0, -1), 0.5, red_matte);
+    surface sphere_copper = surface_sphere_new(vec3_new(0, -0.1, -1), 0.4, rough_copper);
+    surface sphere_mirror = surface_sphere_new(vec3_new(0.75, -0.2, -0.5), 0.3, mirror);
+    s.surfaces = malloc(sizeof(surface*) * 4);
+    s.surfaces[0] = sphere_big; 
+    s.surfaces[1] = sphere_red; 
+    s.surfaces[2] = sphere_copper; 
+    s.surfaces[3] = sphere_mirror;
+    return s;
+}
+
 vec3 scene_color(ray3 r, surface* surfaces, int num_surfaces) {
     /* Find the nearest surface which r intersects */
 

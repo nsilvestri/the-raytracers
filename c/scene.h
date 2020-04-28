@@ -5,6 +5,13 @@
 #include "ray3.h"
 #include "surface.h"
 
+typedef struct scene {
+    surface* surfaces;
+    int num_surfaces;
+} scene;
+
+scene scene_new();
+
 vec3 scene_color(ray3 r, surface* surfaces, int num_surfaces);
 
 #endif

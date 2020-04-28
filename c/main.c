@@ -7,6 +7,9 @@
 #include "ray3.h"
 #include "scene.h"
 #include "surface.h"
+#include "image.h"
+
+void render(int* bounds, image image, scene scene, int samples);
 
 // benchmarking func
 struct timespec diff(struct timespec start, struct timespec end);
@@ -18,10 +21,49 @@ int main(int argc, char** argv) {
     // set image properties
     int image_width = 800;
     int image_height = 400;
-    int num_samples = 1000;
+    image output_image = image_new(image_width, image_height);
 
-    // write PPM header
-    printf("P3\n%d %d\n255\n", image_width, image_height);
+    // create scene
+    scene scene = scene_new();
+
+    // benchmarking
+    struct timespec start;
+    clock_gettime(CLOCK_REALTIME, &start);
+
+    // render
+    int num_samples = 1000;
+    render(NULL, output_image, scene, num_samples);
+
+    // end benchmark
+    struct timespec stop;
+    clock_gettime(CLOCK_REALTIME, &stop);
+    time_t end = time(NULL);
+
+    // output benchmark
+    struct timespec total = diff(start, stop);
+    fprintf(stderr, "Total time: %d.%d seconds\n", total.tv_sec, total.tv_nsec);
+    fprintf(stderr, "Samples per second: %f\n", (float) (image_height * image_width * num_samples) / (total.tv_sec + ((float) total.tv_nsec / 1000000000)));
+
+    // write file to output
+    image_dump_as_ppm(output_image);
+}
+
+void render(int* bounds, image image, scene scene, int num_samples) {
+
+    int x1, x2, y1, y2;
+
+    if (bounds != NULL) {
+        x1 = bounds[0];
+        x2 = bounds[1];
+        y1 = bounds[2];
+        y2 = bounds[3];
+    }
+    else {
+        x1 = 0;
+        x2 = image.width;
+        y1 = 0;
+        y2 = image.height;
+    }
 
     // X-axis is left, Y is up, -Z is towards the screen
     vec3 lower_left_corner = vec3_new(-2.0, -1.0, -1.0);
@@ -29,26 +71,10 @@ int main(int argc, char** argv) {
     vec3 vertical = vec3_new(0.0, 2.0, 0.0);
     vec3 origin = vec3_new(0.0, 0.0, 0.0);
 
-    // manually add surfaces (for now)
-    int num_surfaces = 4;
-    material rough_copper = material_metal_new(0.7, vec3_new(1.0, 0.4, 0.05), 0.8);
-    material mirror = material_metal_new(0.99, vec3_new(0, 0, 0), 0.0);
-    material green_matte = material_lambertian_new(0.5, vec3_new(0.8, 0.8, 0.0));
-    material red_matte = material_lambertian_new(0.5, vec3_new(1.0, 0.3, 0.3));
-    surface sphere_big = surface_sphere_new(vec3_new(0, -100.5, -1), 100, green_matte);
-    surface sphere_red = surface_sphere_new(vec3_new(-1.0, 0, -1), 0.5, red_matte);
-    surface sphere_copper = surface_sphere_new(vec3_new(0, -0.1, -1), 0.4, rough_copper);
-    surface sphere_mirror = surface_sphere_new(vec3_new(0.75, -0.2, -0.5), 0.3, mirror);
-    surface surfaces[4] = { sphere_big, sphere_red, sphere_copper, sphere_mirror };
-
-    // benchmarking
-    struct timespec start;
-    clock_gettime(CLOCK_REALTIME, &start);
-
-    // iterate over each pixel, from top to bottom (because of PPM pixel order)
-    for (int j = image_height - 1; j >= 0; j--) {
+    // iterate over each pixel
+    for (int j = y1; j < y2; j++) {
         // and left to right
-        for (int i = 0; i < image_width; i++) {
+        for (int i = x1; i < x2; i++) {
             // create a vec3 to store the total color of this pixel
             vec3 pixel_color = vec3_new(0, 0, 0);
 
@@ -56,8 +82,8 @@ int main(int argc, char** argv) {
             for (int s = 0; s < num_samples; s++) {
                 // u and v are percentages of the width and height of the image
                 // randomness chooses a random point within the square of the pixel
-                float u = ((float) i / image_width) + (drand48() / image_width); 
-                float v = ((float) j / image_height) + (drand48() / image_height);
+                float u = ((float) i / (x2 - x1)) + (drand48() / (x2 - x1)); 
+                float v = ((float) j / (y2 - y1)) + (drand48() / (y2 - y1));
                 
                 // vec3 component for how for how far right to push our final ray
                 vec3 horizontal_offset = vec3_scale(horizontal, u);
@@ -75,33 +101,24 @@ int main(int argc, char** argv) {
                 ray3 r = ray3_new(origin, direction);
 
                 // get our color sample for our single ray from the world
-                vec3 color_sample = scene_color(r, surfaces, num_surfaces);
+                vec3 color_sample = scene_color(r, scene.surfaces, scene.num_surfaces);
 
                 // gamma correct sample
                 vec3 color_sample_gamma = vec3_gamma_correct(color_sample, 0.5);
 
                 // add sample color to color total for this pixel
                 pixel_color = vec3_add(pixel_color, color_sample_gamma);
-
             }
             
             // pixel_color contains the total of all samples; get the average of each sample
             pixel_color = vec3_scale(pixel_color, 1.0 / num_samples);
 
-            // write pixel color to file
-            printf("%d %d %d\n", (int) (pixel_color.x * 255), (int) (pixel_color.y * 255), (int) (pixel_color.z * 255));
+            // store in image_data
+            image.data[j][i][0] = pixel_color.x;
+            image.data[j][i][1] = pixel_color.y;
+            image.data[j][i][2] = pixel_color.z;
         }
     }
-
-    // end benchmark
-    struct timespec stop;
-    clock_gettime(CLOCK_REALTIME, &stop);
-    time_t end = time(NULL);
-
-    // output benchmark
-    struct timespec total = diff(start, stop);
-    fprintf(stderr, "Total time: %d.%d seconds\n", total.tv_sec, total.tv_nsec);
-    fprintf(stderr, "Samples per second: %f\n", (float) (image_height * image_width * num_samples) / (total.tv_sec + ((float) total.tv_nsec / 1000000000)));
 }
 
 /**
