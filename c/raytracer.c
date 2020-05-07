@@ -31,17 +31,17 @@ int main(int argc, char** argv) {
     clock_gettime(CLOCK_REALTIME, &start);
 
     // render
-    int num_samples = 1000;
-    render(NULL, output_image, scene, num_samples);
+    int num_samples = 10;
+    int bounds[] = {0, image_width - 1, 0, image_height - 1};
+    render(bounds, output_image, scene, num_samples);
 
     // end benchmark
     struct timespec stop;
     clock_gettime(CLOCK_REALTIME, &stop);
-    time_t end = time(NULL);
 
     // output benchmark
     struct timespec total = diff(start, stop);
-    fprintf(stderr, "Total time: %d.%d seconds\n", total.tv_sec, total.tv_nsec);
+    fprintf(stderr, "Total time: %d.%d seconds\n", (int) total.tv_sec, (int) total.tv_nsec);
     fprintf(stderr, "Samples per second: %f\n", (float) (image_height * image_width * num_samples) / (total.tv_sec + ((float) total.tv_nsec / 1000000000)));
 
     // write file to output
