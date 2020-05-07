@@ -1,5 +1,7 @@
-#include "image.h"
 #include <stdio.h>
+#include <stdlib.h>
+
+#include "image.h"
 
 image image_new(int width, int height) {
     image i;

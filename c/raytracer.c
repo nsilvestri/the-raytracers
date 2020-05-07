@@ -46,6 +46,7 @@ int main(int argc, char** argv) {
 
     // write file to output
     image_dump_as_ppm(output_image);
+    return 0;
 }
 
 void render(int* bounds, image image, scene scene, int num_samples) {

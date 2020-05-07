@@ -64,6 +64,9 @@ hit_record surface_hit(surface s, ray3 r) {
 
         return hit_record_new(t, normal);
     }
+    // TODO: implement w/ other types when implemented (case/switch?)
+    // base case to remove compiler warnings
+    return hit_record_new(0, vec3_new(0, 0, 0));
 }
 
 hit_record hit_record_new(float t, vec3 normal) {

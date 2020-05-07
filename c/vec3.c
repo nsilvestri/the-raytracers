@@ -25,7 +25,6 @@ vec3 vec3_scale(vec3 v, float scale) {
 }
 
 vec3 vec3_normalize(vec3 v) {
-    vec3 result;
     // do degenerate case check
     if (vec3_length(v) == 0) {
         return v;
