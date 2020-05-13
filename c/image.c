@@ -7,7 +7,7 @@ image* image_new(int width, int height) {
     image* i = malloc(sizeof(image));
     i->width = width;
     i->height = height;
-    // allocate space for each row
+    // allocate contiguous block for all image data
     i->data = malloc(sizeof(unsigned char) * height * width * 3);
     return i;
 }
