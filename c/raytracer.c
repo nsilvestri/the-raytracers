@@ -9,7 +9,7 @@
 #include "surface.h"
 #include "image.h"
 
-void render(int* bounds, image* image, scene scene, int samples);
+void render(int* bounds, image image, scene scene, int samples);
 
 // benchmarking func
 struct timespec diff(struct timespec start, struct timespec end);
@@ -19,9 +19,9 @@ int main(int argc, char** argv) {
     srand48(time(NULL));
 
     // set image properties
-    int image_width = 8;
-    int image_height = 4;
-    image* output_image = image_new(image_width, image_height);
+    int image_width = 800;
+    int image_height = 400;
+    image output_image = image_new(image_width, image_height);
 
     // create scene
     scene scene = scene_new();
@@ -31,9 +31,9 @@ int main(int argc, char** argv) {
     clock_gettime(CLOCK_REALTIME, &start);
 
     // render
-    int num_samples = 10;
-    int bounds[] = {0, image_width, 0, image_height};
-    render(bounds, output_image, scene, num_samples);
+    int num_samples = 1;
+    // int bounds[] = {0, image_width, 0, image_height};
+    render(NULL, output_image, scene, num_samples);
 
     // end benchmark
     struct timespec stop;
@@ -45,12 +45,12 @@ int main(int argc, char** argv) {
     fprintf(stderr, "Samples per second: %f\n", (float) (image_height * image_width * num_samples) / (total.tv_sec + ((float) total.tv_nsec / 1000000000)));
 
     // write file to output
-    image_dump_data(output_image);
-    // image_dump_as_ppm(output_image);
+    image_dump_as_ppm(output_image);
+    image_delete(output_image);
     return 0;
 }
 
-void render(int* bounds, image* image, scene scene, int num_samples) {
+void render(int* bounds, image image, scene scene, int num_samples) {
 
     int x1, x2, y1, y2;
 
@@ -62,9 +62,9 @@ void render(int* bounds, image* image, scene scene, int num_samples) {
     }
     else {
         x1 = 0;
-        x2 = image->width;
+        x2 = image.width;
         y1 = 0;
-        y2 = image->height;
+        y2 = image.height;
     }
 
     // X-axis is left, Y is up, -Z is towards the screen
@@ -74,9 +74,9 @@ void render(int* bounds, image* image, scene scene, int num_samples) {
     vec3 origin = vec3_new(0.0, 0.0, 0.0);
 
     // iterate over each pixel
-    for (int j = y1; j < y2; j++) {
+    for (int y = y1; y < y2; y++) {
         // and left to right
-        for (int i = x1; i < x2; i++) {
+        for (int x = x1; x < x2; x++) {
             // create a vec3 to store the total color of this pixel
             vec3 pixel_color = vec3_new(0, 0, 0);
 
@@ -84,8 +84,8 @@ void render(int* bounds, image* image, scene scene, int num_samples) {
             for (int s = 0; s < num_samples; s++) {
                 // u and v are percentages of the width and height of the image
                 // randomness chooses a random point within the square of the pixel
-                float u = ((float) i / (x2 - x1)) + (drand48() / (x2 - x1)); 
-                float v = ((float) j / (y2 - y1)) + (drand48() / (y2 - y1));
+                float u = ((float) x / (x2 - x1)) + (drand48() / (x2 - x1)); 
+                float v = ((float) y / (y2 - y1)) + (drand48() / (y2 - y1));
                 
                 // vec3 component for how for how far right to push our final ray
                 vec3 horizontal_offset = vec3_scale(horizontal, u);
@@ -119,9 +119,9 @@ void render(int* bounds, image* image, scene scene, int num_samples) {
             unsigned char r = pixel_color.x * 255;
             unsigned char g = pixel_color.y * 255;
             unsigned char b = pixel_color.z * 255;
-            image->data[(j * image->width) + (i * 3) + 0] = r;
-            image->data[(j * image->width) + (i * 3) + 1] = g;
-            image->data[(j * image->width) + (i * 3) + 2] = b;
+            image.data[(y * image.width) + (x * 3) + 0] = r;
+            image.data[(y * image.width) + (x * 3) + 1] = g;
+            image.data[(y * image.width) + (x * 3) + 2] = b;
         }
     }
 }
