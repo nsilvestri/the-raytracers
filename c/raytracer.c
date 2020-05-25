@@ -31,7 +31,7 @@ int main(int argc, char** argv) {
     clock_gettime(CLOCK_REALTIME, &start);
 
     // render
-    int num_samples = 1;
+    int num_samples = 10;
     // int bounds[] = {0, image_width, 0, image_height};
     render(NULL, output_image, scene, num_samples);
 
@@ -73,7 +73,7 @@ void render(int* bounds, image image, scene scene, int num_samples) {
     vec3 vertical = vec3_new(0.0, 2.0, 0.0);
     vec3 origin = vec3_new(0.0, 0.0, 0.0);
 
-    // iterate over each pixel
+    // iterate over each pixel. Starts at bottom left as 0,0
     for (int y = y1; y < y2; y++) {
         // and left to right
         for (int x = x1; x < x2; x++) {
@@ -119,9 +119,10 @@ void render(int* bounds, image image, scene scene, int num_samples) {
             unsigned char r = pixel_color.x * 255;
             unsigned char g = pixel_color.y * 255;
             unsigned char b = pixel_color.z * 255;
-            image.data[(y * image.width) + (x * 3) + 0] = r;
-            image.data[(y * image.width) + (x * 3) + 1] = g;
-            image.data[(y * image.width) + (x * 3) + 2] = b;
+            int image_y = image.height - y - 1; // y is flipped because origin is top-left in image coords
+            image.data[(image_y * image.width * 3) + (x * 3) + 0] = r;
+            image.data[(image_y * image.width * 3) + (x * 3) + 1] = g;
+            image.data[(image_y * image.width * 3) + (x * 3) + 2] = b;
         }
     }
 }

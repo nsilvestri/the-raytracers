@@ -22,11 +22,11 @@ void image_dump_as_ppm(image i) {
     int height = i.height;
     printf("P3\n%d %d\n255\n", width, height);
 
-    size_t image_size = sizeof(unsigned char) * i.width * i.height * 3;
-    for (unsigned char* cur = i.data; cur < i.data + image_size; cur+=3) {
+    unsigned char* end_of_data = i.data + (sizeof(unsigned char) * i.width * i.height * 3);
+    for (unsigned char* cur = i.data; cur < end_of_data; cur+=3) {
         printf("%hhu ", *cur);     // r
-        printf("%hhu ", *cur + 1); // g
-        printf("%hhu ", *cur + 2); // b
+        printf("%hhu ", *(cur + 1)); // g
+        printf("%hhu ", *(cur + 2)); // b
         printf("\n");
     }
 }

@@ -1,4 +1,4 @@
-CC=gcc -Wall
+CC=gcc -Wall -O3
 CC_DEBUG=gcc -Wall
 
 raytracer : raytracer.c vec3.o surface.o ray3.o scene.o material.o image.o
