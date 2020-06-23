@@ -2,7 +2,7 @@ CC=gcc -Wall -O3
 CC_DEBUG=gcc -Wall
 
 raytracer : raytracer.c vec3.o surface.o ray3.o scene.o material.o image.o
-	$(CC) -o raytracer raytracer.c vec3.o ray3.o surface.o scene.o material.o image.o -lm
+	$(CC) -o raytracer raytracer.c vec3.o ray3.o surface.o scene.o material.o image.o -lm -pthread
 
 vec3.o : vec3.c vec3.h
 	$(CC) -c vec3.c

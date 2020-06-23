@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <pthread.h>
 #include <math.h>
 #include <time.h>
 
@@ -9,7 +10,16 @@
 #include "surface.h"
 #include "image.h"
 
-void render(int* bounds, image image, scene scene, int samples);
+#define THREADS 4
+
+typedef struct render_args {
+    int* bounds;
+    image image;
+    scene scene;
+    int samples;
+} render_args;
+
+void* render(void* parameter);
 
 // benchmarking func
 struct timespec diff(struct timespec start, struct timespec end);
@@ -32,8 +42,22 @@ int main(int argc, char** argv) {
 
     // render
     int num_samples = 10;
-    // int bounds[] = {0, image_width, 0, image_height};
-    render(NULL, output_image, scene, num_samples);
+    pthread_t threads[THREADS];
+    for (int i = 0; i < THREADS; i++) {
+        pthread_t thread;
+        render_args parameter;
+        int bounds[] = { image_width / THREADS * i, image_width / THREADS, 0, image_height };
+        parameter.bounds = bounds;
+        parameter.bounds = NULL;
+        parameter.image = output_image;
+        parameter.scene = scene;
+        parameter.samples = num_samples;
+        threads[i] = pthread_create(&thread, NULL, render, &parameter);
+    }
+    // wait for all threads to finish
+    for (int i = 0; i < THREADS; i++) {
+        pthread_join(threads[i], NULL);
+    }
 
     // end benchmark
     struct timespec stop;
@@ -50,7 +74,12 @@ int main(int argc, char** argv) {
     return 0;
 }
 
-void render(int* bounds, image image, scene scene, int num_samples) {
+void* render(void* parameter) {
+    render_args* args = (render_args*)parameter;
+    int* bounds = args->bounds;
+    image image = args->image;
+    scene scene = args->scene;
+    int num_samples = args->samples;
 
     int x1, x2, y1, y2;
 
@@ -125,6 +154,7 @@ void render(int* bounds, image image, scene scene, int num_samples) {
             image.data[(image_y * image.width * 3) + (x * 3) + 2] = b;
         }
     }
+    return NULL; // void* functions require some return
 }
 
 /**
