@@ -10,7 +10,7 @@
 #include "surface.h"
 #include "image.h"
 
-#define NUM_THREADS 4
+#define NUM_THREADS 1
 
 typedef struct render_args {
     int* bounds;
@@ -25,12 +25,17 @@ void* render(void* parameter);
 struct timespec diff(struct timespec start, struct timespec end);
 
 int main(int argc, char** argv) {
+    // if (argc != 3) {
+    //     printf("Usage:\n");
+    //     printf("  ./prog01 scene_file output_ppm\n");
+    //     exit(1);
+    // }
     // seed random number generator
     srand48(time(NULL));
 
     // set image properties
-    int image_width = 800;
-    int image_height = 400;
+    int image_width = 400;
+    int image_height = 200;
     image output_image = image_new(image_width, image_height);
 
     // create scene
@@ -99,7 +104,7 @@ void* render(void* parameter) {
     vec3 lower_left_corner = vec3_new(-2.0, -1.0, -1.0);
     vec3 horizontal = vec3_new(4.0, 0.0, 0.0);
     vec3 vertical = vec3_new(0.0, 2.0, 0.0);
-    vec3 origin = vec3_new(0.0, 0.0, 0.0);
+    vec3 origin = vec3_new(0.0, 1.0, 0.0);
 
     // iterate over each pixel. Starts at bottom left as 0,0
     for (int y = y1; y < y2; y++) {
@@ -168,15 +173,15 @@ void* render(void* parameter) {
 
 struct timespec diff(struct timespec start, struct timespec end)
 {
-	struct timespec temp;
-	if ((end.tv_nsec-start.tv_nsec)<0) {
-		temp.tv_sec = end.tv_sec-start.tv_sec-1;
-		temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
-	} else {
-		temp.tv_sec = end.tv_sec-start.tv_sec;
-		temp.tv_nsec = end.tv_nsec-start.tv_nsec;
-	}
-	return temp;
+    struct timespec temp;
+    if ((end.tv_nsec-start.tv_nsec)<0) {
+        temp.tv_sec = end.tv_sec-start.tv_sec-1;
+        temp.tv_nsec = 1000000000+end.tv_nsec-start.tv_nsec;
+    } else {
+        temp.tv_sec = end.tv_sec-start.tv_sec;
+        temp.tv_nsec = end.tv_nsec-start.tv_nsec;
+    }
+    return temp;
 }
 
      

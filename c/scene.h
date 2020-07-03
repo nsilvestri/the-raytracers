@@ -12,6 +12,8 @@ typedef struct scene {
 
 scene scene_new();
 
+scene scene_read_file(char* filepath);
+
 vec3 scene_color(ray3 r, surface* surfaces, int num_surfaces);
 
 #endif

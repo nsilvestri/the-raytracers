@@ -1,6 +1,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "scene.h"
 #include "vec3.h"
@@ -26,6 +27,32 @@ scene scene_new() {
     s.surfaces[2] = sphere_copper; 
     s.surfaces[3] = sphere_mirror;
     return s;
+}
+
+scene scene_read_file(char* filename) {
+    scene s;
+
+    char* line = NULL;
+    size_t len = 0;
+    size_t chars_read;
+    FILE* input_file = fopen(filename, 'r');
+
+    if (input_file == NULL) {
+        fprintf(stderr, 'There was an error opening the file: %s\n', filename);
+        exit(1);
+    }
+
+    while ((chars_read = getline(&line, &len, input_file)) != -1) {
+        char* token = strtok(line, ' ');
+        if (*token == 'e') {
+            
+        }
+    }
+
+    fclose(input_file);
+    if (line) {
+        free(line);
+    }
 }
 
 vec3 scene_color(ray3 r, surface* surfaces, int num_surfaces) {
