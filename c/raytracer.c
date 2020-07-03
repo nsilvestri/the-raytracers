@@ -10,7 +10,7 @@
 #include "surface.h"
 #include "image.h"
 
-#define THREADS 4
+#define THREADS 2
 
 typedef struct render_args {
     int* bounds;
@@ -43,16 +43,16 @@ int main(int argc, char** argv) {
     // render
     int num_samples = 10;
     pthread_t threads[THREADS];
+    render_args parameters[THREADS];
     for (int i = 0; i < THREADS; i++) {
         pthread_t thread;
-        render_args parameter;
         int bounds[] = { image_width / THREADS * i, image_width / THREADS, 0, image_height };
-        parameter.bounds = bounds;
-        parameter.bounds = NULL;
-        parameter.image = output_image;
-        parameter.scene = scene;
-        parameter.samples = num_samples;
-        threads[i] = pthread_create(&thread, NULL, render, &parameter);
+        parameters[i].bounds = bounds;
+        parameters[i].bounds = NULL;
+        parameters[i].image = output_image;
+        parameters[i].scene = scene;
+        parameters[i].samples = num_samples;
+        threads[i] = pthread_create(&thread, NULL, render, &parameters[i]);
     }
     // wait for all threads to finish
     for (int i = 0; i < THREADS; i++) {

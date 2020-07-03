@@ -30,7 +30,7 @@ debug :
 	$(CC_DEBUG) -c -g scene.c
 	$(CC_DEBUG) -c -g material.c
 	$(CC_DEBUG) -c -g image.c
-	$(CC_DEBUG) -g -o debug raytracer.c vec3.o ray3.o surface.o scene.o material.o image.o -lm
+	$(CC_DEBUG) -g -o debug raytracer.c vec3.o ray3.o surface.o scene.o material.o image.o -lm -pthread
 
 clean : 
 	rm -f raytracer debug *.o
