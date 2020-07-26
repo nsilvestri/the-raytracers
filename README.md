@@ -12,21 +12,13 @@ Each raytracer has a makefile associated with it (except where otherwise noted),
 
 # Languages
 
-* [C++](cpp) (first raytracer written for a graphics class in school. Rough, glitchy, and not yet comparable to others)
-* [C](c)
-* [Java](java)
+| Language | Raycasting | File I/O | Parallelization | CLI args | Notes |
+|:-:|:-:|:-:|:-:|:-:|:-:|
+|[C](c)|x|output|yes, non-functional and buggy||
+|[C++](cpp) |x|x||x|(not a Monte Carlo raycaster. Will be rewritten)|
+|[Java](java)|x|output|||
+|Rust|||||uses Cargo crates as dependencies instead of implementing vector math itself|
+|Go|||||
+|Python|||||
 
-These raytracers are not meant to be overly complex. The feature set for any raytracer is based on those covered in Peter Shirley's [Raytracing in a Weekend (PDF)](http://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf), which includes:
-
-* spheres
-* ambient sky-lighting
-* implicit shadows
-* depth of field
-* antialiasing
-* roughness
-* metalicity
-
-Additional features I am adding for the sake of comparison:
-
-* file I/O
-* Parallelization
+These raytracers are not meant to be overly complex. The feature set for any raytracer is based on those covered in Peter Shirley's [Raytracing in a Weekend (PDF)](http://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf).
