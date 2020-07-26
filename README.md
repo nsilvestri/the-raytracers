@@ -17,7 +17,7 @@ Each raytracer has a makefile associated with it (except where otherwise noted),
 |[C](c)|x|output|yes, non-functional and buggy||
 |[C++](cpp) |x|x||x|(not a Monte Carlo raycaster. Will be rewritten)|
 |[Java](java)|x|output|||
-|Rust|||||uses Cargo crates as dependencies instead of implementing vector math itself|
+|Rust|||||uses Cargo crates as dependencies instead of implementing vectors and PPM generators|
 |Go|||||
 |Python|||||
 
