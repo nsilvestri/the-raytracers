@@ -9,4 +9,5 @@ edition = "2018"
 [dependencies]
 array2d = "0.2.1"
 geefr-ppm = "0.2.0"
+rand = "0.7.3"
 vek = "0.11.2"
