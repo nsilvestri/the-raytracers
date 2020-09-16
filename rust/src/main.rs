@@ -14,7 +14,7 @@ fn main() {
     image.write(String::from("image.ppm")).expect("Failed to save PPM");
 }
 
-fn render(scene: Scene, image: Ppm, num_samples: i32) -> Ppm {
+fn render(scene: Scene, mut image: Ppm, num_samples: i32) -> Ppm {
     let x1 = 0;
     let x2 = image.width;
     let y1 = 0;
@@ -31,15 +31,15 @@ fn render(scene: Scene, image: Ppm, num_samples: i32) -> Ppm {
         // and left to right
         for x in x1..x2 {
             // create a vec3 to store the total color of this pixel
-            let pixel_color = Vec3{ x: 0.0, y: 0.0, z: 0.0 };
+            let mut pixel_color = Vec3{ x: 0.0, y: 0.0, z: 0.0 };
 
             // sample this pixel num_sample times
-            for s in 0..num_samples {
+            for _s in 0..num_samples {
                 // u and v are percentages of the width and height of the image
                 // randomness chooses a random point within the square of the pixel
-                let mut rng = rand::thread_rng();
-                let u: f32 = (x / (x2 - x1)) as f32 + (rng.gen_range(0.0, 1.0) / (x2 - x1) as f32); 
-                let v: f32 = (y / (y2 - y1)) as f32 + (rng.gen_range(0.0, 1.0) / (y2 - y1) as f32);
+                use rand::{Rng, thread_rng};
+                let u: f32 = (x / (x2 - x1)) as f32 + (thread_rng().gen_range(0.0, 1.0) / (x2 - x1) as f32); 
+                let v: f32 = (y / (y2 - y1)) as f32 + (thread_rng().gen_range(0.0, 1.0) / (y2 - y1) as f32);
                 
                 // vec3 component for how for how far right to push our final ray
                 let horizontal_offset = horizontal * u;
@@ -60,23 +60,21 @@ fn render(scene: Scene, image: Ppm, num_samples: i32) -> Ppm {
                 let color_sample = scene.color(r);
 
                 // gamma correct sample
-                vec3 color_sample_gamma = vec3_gamma_correct(color_sample, 0.5);
+                let color_sample_gamma: Vec3<f32> = Vec3{x: color_sample.x.sqrt(), y: color_sample.y.sqrt(), z: color_sample.z.sqrt()};
 
                 // add sample color to color total for this pixel
-                pixel_color = vec3_add(pixel_color, color_sample_gamma);
+                pixel_color = pixel_color + color_sample_gamma;
             }
             
             // pixel_color contains the total of all samples; get the average of each sample
             let pixel_color: Vec3<f32> = pixel_color * (1.0 / num_samples as f32);
 
             // store in image_data
-            unsigned char r = pixel_color.x * 255;
-            unsigned char g = pixel_color.y * 255;
-            unsigned char b = pixel_color.z * 255;
-            int image_y = image.height - y - 1; // y is flipped because origin is top-left in image coords
-            image.data[(image_y * image.width * 3) + (x * 3) + 0] = r;
-            image.data[(image_y * image.width * 3) + (x * 3) + 1] = g;
-            image.data[(image_y * image.width * 3) + (x * 3) + 2] = b;
+            let r: u8 = (pixel_color.x * 255 as f32) as u8;
+            let g: u8 = (pixel_color.y * 255 as f32) as u8;
+            let b: u8 = (pixel_color.z * 255 as f32) as u8;
+            let image_y: usize = image.height - y - 1; // y is flipped because origin is top-left in image coords
+            image.set_pixel(x, image_y, r, g, b);
         }
     }
     image
@@ -111,14 +109,14 @@ mod scene {
 
         pub fn color(&self, r: crate::Ray3) -> Vec3<f32> {
             /* Find the nearest surface which r intersects */
-            surface nearest;
-            float nearest_t = INFINITY;
+            let mut nearest: &Sphere = &Sphere::zero();
+            let mut nearest_t: f32 = std::f32::INFINITY;
 
-            for (int i = 0; i < num_surfaces; i++) {
-                surface current_surface = surfaces[i];
-                hit_record hit_record = surface_hit(current_surface, r);
+            for i in 0..self.surfaces.len() {
+                let current_surface = &self.surfaces[i];
+                let hit_record = current_surface.hit(&r);
                 // a miss is -INFINITY, but all t < 0 are behind us
-                if (hit_record.t < nearest_t && hit_record.t > 0) {
+                if hit_record.t < nearest_t && hit_record.t > 0.0 {
                     nearest_t = hit_record.t;
                     nearest = current_surface;
                 }
@@ -126,42 +124,32 @@ mod scene {
 
             /* BASE CASE: no intersection; return sky color by default */
 
-            if (nearest_t == INFINITY) {
+            if nearest_t == std::f32::INFINITY {
                 // normalize direction of ray so all values of y will be consistent
-                vec3 unit_direction = vec3_normalize(r.direction);
+                let unit_direction: Vec3<f32> = r.direction.normalized();
 
                 // proportion of sky color mixture based on y component (up-ness)
-                float t = 0.5 * (unit_direction.y + 1.0);
+                let t = 0.5 * (unit_direction.y + 1.0);
 
                 // base color of sky
-                vec3 base_sky_color = vec3_new(0.5, 0.7, 1.0);
-                base_sky_color = vec3_scale(base_sky_color, t);
+                let base_sky_color: Vec3<f32> = Vec3{ x: 0.5, y: 0.7, z: 1.0 } * t;
 
                 // what color the sky fades into, going down
-                vec3 sky_color_gradient = vec3_new(1, 1, 1);
-                sky_color_gradient = vec3_scale(sky_color_gradient, 1.0 - t);
+                let sky_color_gradient: Vec3<f32> = Vec3{ x: 1.0, y: 1.0, z: 1.0 } * (1.0 - t);
 
                 // add base_sky_color and sky_color_gradient
-                return vec3_add(base_sky_color, sky_color_gradient);
+                return base_sky_color + sky_color_gradient;
             }
 
             /* nearest now contains the nearest surface; calculate the color */
 
-            hit_record hit_record = surface_hit(nearest, r);
+            let hit_record: HitRecord = nearest.hit(&r);
 
             // recursive bouncing color
-            vec3 new_ray_color;
-            if (material_should_scatter(nearest.mat)) {
-                // point of intersection is where r intersected the surface in xyz space
-                vec3 point_of_intersection = ray3_point_at_parameter(r, hit_record.t);
-                ray3 scattered = material_scatter(nearest.mat, r, point_of_intersection, hit_record.normal);
-                new_ray_color = scene_color(scattered, surfaces, num_surfaces);
-            }
-            else {
-                new_ray_color = nearest.mat.color;
-            }
+            // todo
             // attenuate color by albedo
-            return vec3_scale(new_ray_color, nearest.mat.albedo);
+            // todo
+            return Vec3{ x: 1.0, y: 1.0, z: 1.0 };
         }
     }
 
@@ -178,7 +166,14 @@ mod scene {
             }
         }
 
-        pub fn hit(&self, r: crate::Ray3) -> HitRecord {
+        pub fn zero() -> Self {
+            Self {
+                position: Vec3{ x: 0.0, y: 0.0, z: 0.0 },
+                radius: 0.0,
+            }
+        }
+
+        pub fn hit(&self, r: &crate::Ray3) -> HitRecord {
             let oc: Vec3<f32> = r.origin - self.position;
             /* a, b, c are A, B, C of quadratic equation */
             // a = (dir . dir)
