@@ -21,4 +21,8 @@ Each raytracer has a makefile associated with it (except where otherwise noted),
 |Go|||||
 |Python|||||
 
+# Preview
+
+![Preview image of a raytracer, from the Java implementation](java/image.png)
+
 These raytracers are not meant to be overly complex. The feature set for any raytracer is based on those covered in Peter Shirley's [Raytracing in a Weekend (PDF)](http://www.realtimerendering.com/raytracing/Ray%20Tracing%20in%20a%20Weekend.pdf).
