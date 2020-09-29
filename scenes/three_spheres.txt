@@ -1,0 +1,33 @@
+# key
+# i <width> <height> - image dimensions
+# s <samples> - number of samples
+# e <x> <y> <z> - eye, or camera location in world space
+# l <x1> <y1> <z1> <x2> <y2> <z2> <x3> <y3> <z3> - lower left corner
+#   First three are the coordinates of the lower left corner of the image in
+#   world space.
+#   Next three are the location of the lower-right corner, relative to the LLC
+#   Next three are the location of the upper-left corner, relative to the LLC
+#   These usually match the ratio of the image dimensions.
+# S <x> <y> <z> <r> <material> - Sphere
+#   First three are the coordinates of the sphere in world space.
+#   r is the radius of the sphere
+#   material is the name of the material declared below
+# M <name> <albedo> <r> <g> <b> [roughness] - material declaration
+#   name is the name of the material, referenced in Sphere
+#   albedo is the albedo (reflectiveness) of the material
+#   r, g, and b are floats from 0 to 1 indicating color. Multiply by 255 to get RGB.
+#   roughness is a parameter for metallic materials. If this value is omitted,
+#   the material is considered to be lambertian
+
+i 800 400
+s 1000
+e 0 0 0
+l -2 -1 -1 4 0 0 0 2 0
+M copper_rough 0.7 1.0 0.4 0.05 0.8
+M matte_green 0.5 0.8 0.8 0
+M matte_red 0.5 1.0 0.3 0.3
+M mirror 0.99 0 0 0 0
+S -1 0 -1 0.5 matte_red
+S 0 -0.1 -1 0.4 copper_rough
+S 0.75 -0.2 -0.5 0.3 mirror
+S 0 -100.5 -1 100 matte_green
