@@ -4,8 +4,8 @@ public class Metal extends Material {
     
     private double roughness;
     
-    public Metal(double albedo, Vec3 color, double roughness) {
-        super(albedo, color);
+    public Metal(String name, double albedo, Vec3 color, double roughness) {
+        super(name, albedo, color);
         this.roughness = roughness;
     }
     

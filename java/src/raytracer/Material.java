@@ -5,8 +5,10 @@ import java.util.Random;
 public abstract class Material {
     protected double albedo;
     protected Vec3 color;
+    protected String name;
     
-    public Material(double albedo, Vec3 color) {
+    public Material(String name, double albedo, Vec3 color) {
+        this.name = name;
         this.albedo = albedo;
         this.color = color;
     }

@@ -5,8 +5,10 @@ import java.util.List;
 public class Scene {
 
     private List<Surface> surfaces;
+    private Camera camera;
 
-    public Scene(List<Surface> surfaces) {
+    public Scene(Camera camera, List<Surface> surfaces) {
+        this.camera = camera;
         this.surfaces = surfaces;
     }
 
@@ -113,5 +115,13 @@ public class Scene {
         }
 
         return nearestHitRecord;
+    }
+
+    /**
+     * Returns the camera associated with this scene.
+     * @return the camera associated with this scene.
+     */
+    public Camera getCamera() {
+        return camera;
     }
 }

@@ -26,6 +26,14 @@ public class Vec3 {
     }
 
     /**
+     * Creates a new Vec3 with all 0 components.
+     */
+    public Vec3() {
+        this.x = 0;
+        this.y = 0;
+        this.z = 0;
+    }
+    /**
      * Calculates the length of this Vec3.
      * 
      * @return the length of this Vec3.

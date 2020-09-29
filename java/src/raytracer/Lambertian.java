@@ -2,8 +2,8 @@ package raytracer;
 
 public class Lambertian extends Material {
 
-    public Lambertian(double albedo, Vec3 color) {
-        super(albedo, color);
+    public Lambertian(String name, double albedo, Vec3 color) {
+        super(name, albedo, color);
     }
 
     @Override

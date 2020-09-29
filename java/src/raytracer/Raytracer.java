@@ -1,20 +1,116 @@
 package raytracer;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.stream.Stream;
 
 public class Raytracer {
 
-    public static void main(String[] args) {
-        
-        // set image properties
-        int imageWidth = 800;
-        int imageHeight = 400;
-        int numSamples = 1000;
+    private int imageWidth;
+    private int imageHeight;
+    private int numSamples;
+
+    private Scene scene;
+
+    public Raytracer(String inputFile) {
+        Camera camera = new Camera(); // camera defaults will probably be overwritten
+        Map<String, Material> materials = new HashMap<String, Material>();
+        List<Surface> surfaces = new ArrayList<Surface>();
+        try (Stream<String> stream = Files.lines(Paths.get(inputFile))) {
+            stream.forEach(line -> {
+                String[] lineParts = line.split(" ");
+                switch(lineParts[0].trim()) {
+                    case "":
+                    case "#":
+                        // comment line; skip
+                        break;
+                    case "i": {
+                        imageWidth = Integer.parseInt(lineParts[1]);
+                        imageHeight = Integer.parseInt(lineParts[2]);
+                        break;
+                    }
+                    case "s": {
+                        numSamples = Integer.parseInt(lineParts[1]);
+                        break;
+                    }
+                    case "e": {
+                        double x = Double.parseDouble(lineParts[1]);
+                        double y = Double.parseDouble(lineParts[2]);
+                        double z = Double.parseDouble(lineParts[3]);
+                        Vec3 position = new Vec3(x, y, z);
+                        camera.setPosition(position);
+                        break;
+                    }
+                    case "l": {
+                        double x1 = Double.parseDouble(lineParts[1]);
+                        double y1 = Double.parseDouble(lineParts[2]);
+                        double z1 = Double.parseDouble(lineParts[3]);
+                        double x2 = Double.parseDouble(lineParts[4]);
+                        double y2 = Double.parseDouble(lineParts[5]);
+                        double z2 = Double.parseDouble(lineParts[6]);
+                        double x3 = Double.parseDouble(lineParts[7]);
+                        double y3 = Double.parseDouble(lineParts[8]);
+                        double z3 = Double.parseDouble(lineParts[9]);
+                        Vec3 lowerLeftCorner = new Vec3(x1, y1, z1);
+                        Vec3 horizontal = new Vec3(x2, y2, z2);
+                        Vec3 vertical = new Vec3(x3, y3, z3);
+                        camera.setLowerLeftCorner(lowerLeftCorner);
+                        camera.setHorizontal(horizontal);
+                        camera.setVertical(vertical);
+                        break;
+                    }
+                    case "M": {
+                        String materialName = lineParts[1];
+                        double albedo = Double.parseDouble(lineParts[2]);
+                        double r = Double.parseDouble(lineParts[3]);
+                        double g = Double.parseDouble(lineParts[4]);
+                        double b = Double.parseDouble(lineParts[5]);
+                        Material newMaterial;
+                        if (lineParts.length == 7) {
+                            double roughness = Double.parseDouble(lineParts[6]);
+                            newMaterial = new Metal(materialName, albedo, new Vec3(r, g, b), roughness);
+                        } else {
+                            newMaterial = new Lambertian(materialName, albedo, new Vec3(r, g, b));
+                        }
+                        materials.put(materialName, newMaterial);
+                        break;
+                    }
+                    case "S": {
+                        double x = Double.parseDouble(lineParts[1]);
+                        double y = Double.parseDouble(lineParts[2]);
+                        double z = Double.parseDouble(lineParts[3]);
+                        double radius = Double.parseDouble(lineParts[4]);
+                        String material = lineParts[5];
+                        Sphere newSphere = new Sphere(new Vec3(x, y, z), radius, materials.get(material));
+                        surfaces.add(newSphere);
+                        break;
+                    }
+                    default:
+                        System.err.println("Unrecognized line operation in " + inputFile + ": " + lineParts[0]);
+                        break;
+
+                }
+            });
+        } catch (IOException ioe) {
+            System.err.println("Unable to read file " + inputFile);
+            System.exit(1);
+        }
+
+        scene = new Scene(camera, surfaces);
+    }
+
+    public void execute() {
         
         // Set up output file
         FileOutputStream out = null;
@@ -34,25 +130,7 @@ public class Raytracer {
         
         // seed random number generator
         Random random = new Random();
-        
-        // set up image dimensions in scene
-        Vec3 lowerLeftCorner = new Vec3(-2, -1, -1);
-        Vec3 horizontal = new Vec3(4, 0, 0);
-        Vec3 vertical = new Vec3(0, 2, 0);
-        Vec3 origin = new Vec3(0, 0, 0);
-        
-        List<Surface> surfaces = new ArrayList<Surface>();
-        Material roughCopper = new Metal(0.7, new Vec3(1.0, 0.4, 0.05), 0.8);
-        Material matte = new Lambertian(0.5, new Vec3(0.8, 0.8, 0.0));
-        Material redMatte = new Lambertian(0.5, new Vec3(1.0, 0.3, 0.3));
-        Material mirror = new Metal(0.99, new Vec3(0.0, 0.0, 0.0), 0);
-        surfaces.add(new Sphere(new Vec3(-1.0, 0, -1), 0.5, redMatte));
-        surfaces.add(new Sphere(new Vec3(0, -0.1, -1), 0.4, roughCopper));
-        surfaces.add(new Sphere(new Vec3(0.75, -0.2, -0.5), 0.3, mirror));
-        surfaces.add(new Sphere(new Vec3(0, -100.5, -1), 100, matte));
-        
-        Scene scene = new Scene(surfaces);
-        
+
         long start = System.nanoTime();
         
         // iterate over each pixel, from top to bottom (because of PPM pixel order)
@@ -63,13 +141,13 @@ public class Raytracer {
                     double u = ((double) i / imageWidth) + (random.nextDouble() / imageWidth);
                     double v = ((double) j / imageHeight) + (random.nextDouble() / imageHeight);
                     
-                    Vec3 horizontalOffset = Vec3.scale(horizontal, u);
-                    Vec3 verticalOffset = Vec3.scale(vertical, v);
+                    Vec3 horizontalOffset = Vec3.scale(scene.getCamera().getHorizontal(), u);
+                    Vec3 verticalOffset = Vec3.scale(scene.getCamera().getVertical(), v);
                     
                     Vec3 totalOffset = Vec3.add(horizontalOffset, verticalOffset);
-                    Vec3 direction = Vec3.add(lowerLeftCorner, totalOffset);
+                    Vec3 direction = Vec3.add(scene.getCamera().getLowerLeftCorner(), totalOffset);
                     
-                    Ray3 r = new Ray3(origin, direction);
+                    Ray3 r = new Ray3(scene.getCamera().getPosition(), direction);
                     
                     Vec3 colorSample = scene.color(r);
                     
@@ -107,5 +185,10 @@ public class Raytracer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static void main(String[] args) {
+        Raytracer raytracer = new Raytracer(args[0]);
+        raytracer.execute();
     }
 }
