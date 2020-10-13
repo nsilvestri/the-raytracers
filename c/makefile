@@ -16,8 +16,8 @@ surface.o : surface.c surface.h ray3.o vec3.o
 material.o : material.c material.h vec3.o surface.o
 	$(CC) -c material.c
 
-scene.o : scene.c scene.h vec3.o ray3.o surface.o material.o
-	$(CC) -c scene.c
+scene.o : scene.c scene.h vec3.o ray3.o surface.o material.o camera.h
+	$(CC) -c scene.c camera.h
 
 image.o : image.c image.h
 	$(CC) -c image.c

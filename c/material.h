@@ -10,6 +10,7 @@ typedef enum {
 } material_type;
 
 typedef struct {
+    char* name;
     material_type type;
     float albedo;
     vec3 color;
@@ -17,8 +18,8 @@ typedef struct {
     float metal_roughness;
 } material;
 
-material material_lambertian_new(float albedo, vec3 color);
-material material_metal_new(float albedo, vec3 color, float roughness);
+material* material_lambertian_new(char* name, float albedo, vec3 color);
+material* material_metal_new(char* name, float albedo, vec3 color, float roughness);
 
 ray3 material_scatter(material m, ray3 r, vec3 point_of_intersection, vec3 normal);
 

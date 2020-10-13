@@ -11,7 +11,7 @@ typedef enum {
     SURFACE_PLANE
 } surface_type;
 
-typedef struct {
+typedef struct surface {
     // fields for all surfaces
     surface_type type;
     material mat;

@@ -1,25 +1,30 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "material.h"
 #include "vec3.h"
 #include "surface.h"
 
-material material_lambertian_new(float albedo, vec3 color) {
-    material new_material;
-    new_material.type = MATERIAL_LAMBERTIAN;
-    new_material.albedo = albedo;
-    new_material.color = color;
+material* material_lambertian_new(char* name, float albedo, vec3 color) {
+    material* new_material = malloc(sizeof(material));
+    new_material->name = malloc(sizeof(char) * 24); // arbitrary 24 char name limit
+    new_material->name = strcpy(new_material->name, name);
+    new_material->type = MATERIAL_LAMBERTIAN;
+    new_material->albedo = albedo;
+    new_material->color = color;
 
     return new_material;
 }
 
-material material_metal_new(float albedo, vec3 color, float roughness) {
-    material new_material;
-    new_material.type = MATERIAL_METAL;
-    new_material.albedo = albedo;
-    new_material.color = color;
-    new_material.metal_roughness = roughness;
+material* material_metal_new(char* name, float albedo, vec3 color, float roughness) {
+    material* new_material = malloc(sizeof(material));
+    new_material->name = malloc(sizeof(char) * 24); // arbitrary 24 char name limit
+    new_material->name = strcpy(new_material->name, name);
+    new_material->type = MATERIAL_METAL;
+    new_material->albedo = albedo;
+    new_material->color = color;
+    new_material->metal_roughness = roughness;
 
     return new_material;
 }
