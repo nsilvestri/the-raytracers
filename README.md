@@ -14,9 +14,9 @@ Each raytracer has a makefile associated with it (except where otherwise noted),
 
 | Language | Raycasting | File I/O | Parallelization | CLI args | Notes |
 |:-:|:-:|:-:|:-:|:-:|:-:|
-|[C](c)|x|x|yes, non-functional and buggy|Needs to be cleaned up, buggy and memory leaky and parallelization does not work correctly|
+|[C](c)|x|x|x (non-performant, buggy)|x|Needs to be cleaned up, documented, memory leaks|
 |[C++](cpp) |x|x||x|(not a Monte Carlo raycaster. Will be rewritten)|
-|[Java](java)|x|input scene file and output image file||x|
+|[Java](java)|x|x||x|
 |Rust|||||uses Cargo crates as dependencies instead of implementing vectors and PPM generators|
 |Go|||||
 |Python|||||
