@@ -1,4 +1,5 @@
 import math
+import random
 
 class Vec3:
     def __init__(self, x = 0, y = 0, z = 0):
@@ -28,8 +29,22 @@ class Vec3:
     def __sub__(self, right_side):
         return Vec3(self.x - right_side.x, self.y - right_side.y, self.z - right_side.z)
     
+    def dot(self, v):
+        return (self.x * v.x) + (self.y * v.y) + (self.z * v.z)
+
+    def reflect(self, normal):
+        return self - (2 * self.dot(normal) * normal)
+
+    def gamma_correct(self, gamma):
+        return Vec3(self.x ** gamma, self.y ** gamma, self.z ** gamma)
+
     def __str__(self):
         return 'Vec3(%s, %s, %s)' % (self.x, self.y, self.z)
     
-    def dot(self, v):
-        return (self.x * v.x) + (self.y * v.y) + (self.z * v.z)
+    def __repr__(self):
+        return "Vec3(%s, %s, %s)" % (self.x, self.y, self.z)
+    
+    # static functions #
+    @staticmethod
+    def random_in_unit_sphere():
+        return Vec3(random(), random(), random())
