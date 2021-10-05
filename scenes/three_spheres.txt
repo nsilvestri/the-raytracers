@@ -8,19 +8,19 @@
 #   Next three are the location of the lower-right corner, relative to the LLC
 #   Next three are the location of the upper-left corner, relative to the LLC
 #   These usually match the ratio of the image dimensions.
-# S <x> <y> <z> <r> <material> - Sphere
-#   First three are the coordinates of the sphere in world space.
-#   r is the radius of the sphere
-#   material is the name of the material declared below
 # M <name> <albedo> <r> <g> <b> [roughness] - material declaration
 #   name is the name of the material, referenced in Sphere
 #   albedo is the albedo (reflectiveness) of the material
 #   r, g, and b are floats from 0 to 1 indicating color. Multiply by 255 to get RGB.
 #   roughness is a parameter for metallic materials. If this value is omitted,
 #   the material is considered to be lambertian
+# S <x> <y> <z> <r> <material> - Sphere
+#   First three are the coordinates of the sphere in world space.
+#   r is the radius of the sphere
+#   material is the name of the material declared below
 
 i 800 400
-s 1000
+s 10
 e 0 0 0
 l -2 -1 -1 4 0 0 0 2 0
 M copper_rough 0.7 1.0 0.4 0.05 0.8

@@ -5,3 +5,4 @@ debug
 *.ppm
 .project
 /bin/
+__pycache__
